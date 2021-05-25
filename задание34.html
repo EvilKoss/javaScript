@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Game</title>
+</head>
+<body>
+	<input id = "name" value="Enter name" />
+	<input id = "name1" onclick="character()" type="button" value="Enter" />
+	<p id = "character">Character:</p>
+	<p id = "gold">Gold:</p>
+	<p id = "maxhealth">Max Health:</p>
+	<p id = "maxmana">Max Mana:</p>
+	<p id = "health">Health:</p>
+	<p id = "strength">Strength:</p>
+	<p id = "agility">Agility:</p>
+	<p id = "inteligence">Inteligencey:</p>
+	<p id = "mana">Mana:</p>
+	<p id = "hands">Hands:</p>
+	<p id = "armor">Armor:</p>
+	<p id = "staff">staff:</p>
+	<p id = "exp">Experience:</p>
+	<p id = "lvl">Level:1</p>
+	<p id = "town"><input type="button" onclick = "town()" value = "Go to town"></p>
+	<p id = "dungeon"><input type="button" onclick = "dungeon()" value = "Go to dungeon"></p>
+	<p id="but=1"></p>
+	<p id="but=2"></p>
+	<p id="lvldungeon"></p>
+	<p id="health_monster"></p>
+	<p id="strength_monster"></p>
+	<p id="agility_monster"></p>
+	<p id="fight"></p>
+	<p id="magic"></p>
+	<script type="text/javascript">
+		var health = 70;
+		var gold = 0;
+		var hands = 1;
+		var armor = 1;
+		var staff = 1;
+		var maxhealth = 70;
+		var maxmana = 70;
+		var strength = 10;
+		var agility = 10;
+		var inteligence = 10;
+		var mana = 70;
+		var exp = 0;
+		var max_exp = 10;
+		var lvl = 1;
+		var health_monster = 1;
+		var strength_monster = 0;
+		var difference = 0;
+		var hit_monster = 90;
+		var hit = 90;
+		what();
+		document.getElementById("health").innerHTML = "Health:"+health+"";
+		document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+		document.getElementById("maxhealth").innerHTML = "Max Health:"+maxhealth+"";
+		document.getElementById("maxmana").innerHTML = "Max Mana:"+maxmana+"";
+		document.getElementById("strength").innerHTML = "Strength:"+strength+"";
+		document.getElementById("agility").innerHTML = "Agility:"+agility+"";
+		document.getElementById("inteligence").innerHTML = "Inteligence:"+inteligence+"";
+		document.getElementById("mana").innerHTML = "Mana:"+mana+"";
+		document.getElementById("exp").innerHTML = "Experience:"+exp+"";
+		function character(){
+			document.getElementById("character").innerHTML += document.getElementById("name").value
+			document.getElementById("name").outerHTML = ""
+			document.getElementById("name1").outerHTML = ""
+		}
+		function Heal(){
+			health = maxhealth;
+			mana = maxmana;
+			document.getElementById("health").innerHTML = "Health:"+health+"";
+			document.getElementById("mana").innerHTML = "Mana:"+mana+"";
+		}
+//-------------------------------------------------------------------------------
+		function what(){
+			if (hands == 1){
+				document.getElementById("hands").innerHTML = "Hands:None";
+			}
+			else if (hands == 1.2){
+				document.getElementById("hands").innerHTML = "Hands:Wooden Sword";
+			}
+			else if (hands == 1.4){
+				document.getElementById("hands").innerHTML = "Hands:Tin Sword";
+			}
+			else if (hands == 1.6){
+				document.getElementById("hands").innerHTML = "Hands:Silver Sword";
+			}
+			else if (hands == 1.8){
+				document.getElementById("hands").innerHTML = "Hands:Golden Sword";
+			}
+			else if (hands == 2){
+				document.getElementById("hands").innerHTML = "Hands:Diamond Sword";
+			}
+			if (armor == 1){
+				document.getElementById("armor").innerHTML = "Armor:None";
+			}
+			else if (armor == 1.2){
+				document.getElementById("armor").innerHTML = "Armor:Wooden";
+			}
+			else if (armor == 1.4){
+				document.getElementById("armor").innerHTML = "Armor:Tin";
+			}
+			else if (armor == 1.6){
+				document.getElementById("armor").innerHTML = "Armor:Silver";
+			}
+			else if (armor == 1.8){
+				document.getElementById("armor").innerHTML = "Armor:Golden";
+			}
+			else if (armor == 2){
+				document.getElementById("armor").innerHTML = "Armor:Diamond";
+			}
+			if (staff == 1){
+				document.getElementById("staff").innerHTML = "Staff:None";
+			}
+			else if (staff == 1.2){
+				document.getElementById("staff").innerHTML = "Staff:Wooden";
+			}
+			else if (staff == 1.4){
+				document.getElementById("staff").innerHTML = "Staff:Tin";
+			}
+			else if (staff == 1.6){
+				document.getElementById("staff").innerHTML = "Staff:Silver";
+			}
+			else if (staff == 1.8){
+				document.getElementById("staff").innerHTML = "Staff:Golden";
+			}
+			else if (staff == 2){
+				document.getElementById("staff").innerHTML = "Staff:Diamond";
+			}
+		}
+//-------------------------------------------------------------------------------
+		function restart(){
+			health = 70;
+			gold = 0;
+			maxhealth = 70;
+			maxmana = 70;
+			strength = 10;
+			agility = 10;
+			inteligence = 10;
+			mana = 70;
+			exp = 0;
+			max_exp = 10;
+			lvl = 1;
+			hands = 1;
+			armor = 1;
+			staff = 1;
+			document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+			document.getElementById("health").innerHTML = "Health:"+health+"";
+			document.getElementById("maxmana").innerHTML = "Max Mana:"+maxmana+"";
+			document.getElementById("maxhealth").innerHTML = "Max Health:"+maxhealth+""
+			document.getElementById("strength").innerHTML = "Strength:"+strength+"";
+			document.getElementById("agility").innerHTML = "Agility:"+agility+"";
+			document.getElementById("inteligence").innerHTML = "Inteligence:"+inteligence+"";
+			document.getElementById("mana").innerHTML = "Mana:"+mana+"";
+			document.getElementById("exp").innerHTML = "Experience:"+exp+"";
+			document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+			document.getElementById("town").innerHTML = '<input type="button" onclick = "town()" value = "Go to town">';
+			document.getElementById("dungeon").innerHTML = '<input type="button" onclick = "dungeon()" value = "Go to dungeon">';
+			document.getElementById("magic").innerHTML = "";
+			what();
+			town();
+		}
+//-------------------------------------------------------------------------------
+		function monster(i){
+			health_monster = Math.floor(Math.random() * 70 * i + 1);
+			strength_monster = Math.floor(Math.random() * 10 * i + 1);
+			agility_monster = Math.floor(Math.random() * 10 * i + 1);
+			document.getElementById("health_monster").innerHTML = "health_monster:"+health_monster+"";
+			document.getElementById("strength_monster").innerHTML = "strength_monster:"+strength_monster+"";
+			document.getElementById("agility_monster").innerHTML = "agility_monster:"+agility_monster+"";
+			document.getElementById("fight").innerHTML = "<input id = 'fight_but' type='button' onclick = 'fight("+i+")' value = 'fight'>";
+			document.getElementById("monster").disabled = health_monster > 0 ? true : false;
+			document.getElementById("magic").innerHTML = "<input id = 'fireball_but' type='button' onclick = 'fireball("+i+")' value = 'fireball'>";
+			document.getElementById("magic").innerHTML += "<input id = 'heal_but' type='button' onclick = 'heal_self("+i+")' value = 'heal'>";
+			if (mana == 0){
+				document.getElementById("magic").innerHTML = "NO MANA";
+			}
+		}
+		function run(){
+			document.getElementById("health_monster").innerHTML = "";
+			document.getElementById("strength_monster").innerHTML = "";
+			document.getElementById("agility_monster").innerHTML = "";
+			document.getElementById("fight").innerHTML = "";
+			health_monster = 1;
+			dungeon();
+		}
+//-------------------------------------------------------------------------------
+		function difference_agility(){
+			difference = agility - agility_monster;
+			if(difference>0){
+				hit += difference;
+				hit_monster -= difference * 5;
+			}
+			else if(difference<0){
+				hit += difference * 5;
+				hit_monster -= difference;
+			}
+			if (Math.floor(Math.random() * 100)<hit_monster){
+				health -= Math.floor(strength_monster / armor);
+			}
+		}
+//-------------------------------------------------------------------------------
+		function all_health(i){
+			document.getElementById("health_monster").innerHTML = "health_monster:"+health_monster+"";
+			document.getElementById("health").innerHTML = "Health:"+health+"";
+			if (health <= 0){
+				document.getElementById("but=1").innerHTML = "YOU DIE";
+				document.getElementById("but=2").innerHTML = "<input id = 'restart' type='button' onclick = 'restart()' value = 'RESTART'>";;
+				document.getElementById("health_monster").innerHTML = "";
+				document.getElementById("strength_monster").innerHTML = "";
+				document.getElementById("fight").innerHTML = "";
+				document.getElementById("town").innerHTML = "";
+				document.getElementById("dungeon").innerHTML = "";
+				document.getElementById("agility_monster").innerHTML = "";
+				document.getElementById("magic").innerHTML = "";
+			}
+			if (health_monster <= 0){
+				exp += 3*i;
+				gold += 3*i;
+				var last_exp = 3*i;
+				document.getElementById("strength_monster").innerHTML = "VICTORY Experience:+"+last_exp+"";
+				document.getElementById("exp").innerHTML = "Experience:"+exp+"";
+				document.getElementById("fight_but").disabled = health_monster > 0 ? false : true;
+				document.getElementById("monster").disabled = health_monster > 0 ? true : false;
+				document.getElementById("magic").innerHTML = "";
+				document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+				document.getElementById("magic").innerHTML = "";
+			}
+			if (exp >= max_exp){
+				exp -= max_exp;
+				max_exp *= 2;
+				lvl ++;
+				document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+				document.getElementById("exp").innerHTML = "Experience:"+exp+"";
+				document.getElementById("but=1").innerHTML = "<input id = 'up_health' type='button' onclick = 'up_health()' value = 'Update Health'>";
+				document.getElementById("but=2").innerHTML = "<input id = 'up_strength' type='button' onclick = 'up_strength()' value = 'Update Strength'>";
+				document.getElementById("health_monster").innerHTML = "<input id = 'up_agility' type='button' onclick = 'up_agility()' value = 'Update Agility'>";
+				document.getElementById("strength_monster").innerHTML = "<input id = 'up_inteligence' type='button' onclick = 'up_inteligence()' value = 'Update Inteligence'>";
+				document.getElementById("agility_monster").innerHTML = "Experience:"+exp+" Level UP";
+				document.getElementById("town").innerHTML = "";
+				document.getElementById("dungeon").innerHTML = "";
+			}
+			hit_monster = 90;
+			hit = 90;
+		}
+//-------------------------------------------------------------------------------
+		function fight(i){
+			document.getElementById("exp").innerHTML = "Experience:"+exp+"";
+			difference_agility();
+			if (Math.floor(Math.random() * 100)<hit){
+				health_monster -= strength * hands;
+			}
+			all_health(i);
+		}
+//-------------------------------------------------------------------------------
+		function fireball(i){
+			difference_agility();
+			health_monster -= 1 * inteligence * staff;
+			mana -= 10;
+			if (mana == 0){
+				document.getElementById("magic").innerHTML = "NO MANA";
+			}
+			document.getElementById("mana").innerHTML = "Mana:"+mana+"";
+			all_health(i);
+		}
+		function heal_self(i){
+			if(health < maxhealth){
+				difference_agility();
+				health += 1 * inteligence * staff;
+				mana -= 10;
+				if (mana == 0){
+					document.getElementById("magic").innerHTML = "NO MANA";
+				}
+				document.getElementById("mana").innerHTML = "Mana:"+mana+"";
+				if(health > maxhealth){
+					health = maxhealth
+				}
+				all_health(i);
+			}
+		}
+//-------------------------------------------------------------------------------
+		function up_health(){
+			maxhealth += lvl * 10;
+			document.getElementById("maxhealth").innerHTML = "Max Health:"+maxhealth+"";
+			dungeon();
+		}
+		function up_strength(){
+			strength += lvl * 5;
+			document.getElementById("strength").innerHTML = "Strength:"+strength+"";
+			dungeon();
+		}
+		function up_agility(){
+			agility += lvl * 5;
+			document.getElementById("agility").innerHTML = "Agility:"+agility+"";
+			dungeon();
+		}
+		function up_inteligence(){
+			inteligence += lvl * 5;
+			maxmana += lvl * 10;
+			document.getElementById("maxmana").innerHTML = "Max Mana:"+maxmana+"";
+			document.getElementById("inteligence").innerHTML = "Inteligence:"+inteligence+"";
+			dungeon();
+		}
+//-------------------------------------------------------------------------------
+		function town(){
+			document.getElementById("but=1").innerHTML = "<input id = 'Heal' type='button' onclick = 'Heal()' value = 'Heal/Regen Mana'>";
+			document.getElementById("but=2").innerHTML = "<input id = 'shop' type='button' onclick = 'shop()' value = 'Shop'>";
+			document.getElementById("fight").innerHTML = "";
+			document.getElementById("magic").innerHTML = "";
+			document.getElementById("health_monster").innerHTML = "";
+			document.getElementById("strength_monster").innerHTML = "";
+			document.getElementById("lvldungeon").innerHTML = "";
+			document.getElementById("agility_monster").innerHTML = "";
+		}
+//-------------------------------------------------------------------------------
+		function shop(){
+			document.getElementById("health_monster").innerHTML = "<input type='button' onclick = 'sword(1.2,10)' value = 'Buy 10g:Wooden Sword'>";
+			document.getElementById("health_monster").innerHTML += "<input type='button' onclick = 'sword(1.4,25)' value = 'Buy 25g:Tin Sword'>";
+			document.getElementById("health_monster").innerHTML += "<input type='button' onclick = 'sword(1.6,50)' value = 'Buy 50g:Silver Sword'>";
+			document.getElementById("health_monster").innerHTML += "<input type='button' onclick = 'sword(1.8,75)' value = 'Buy 75g:Golden Sword'>";
+			document.getElementById("health_monster").innerHTML += "<input type='button' onclick = 'sword(2,100)' value = 'Buy 100g:Diamond Sword'>";
+			document.getElementById("strength_monster").innerHTML = "<input type='button' onclick = 'armor(1.2,10)' value = 'Buy 10g:Wooden Armor'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'armor(1.4,25)' value = 'Buy 25g:Tin Armor'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'armor(1.6,50)' value = 'Buy 50g:Silver Armor'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'armor(1.8,75)' value = 'Buy 75g:Golden Armor'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'armor(2,100)' value = 'Buy 100g:Diamond Armor'>";
+			document.getElementById("strength_monster").innerHTML += "<br/><br/><input type='button' onclick = 'staff(1.2,10)' value = 'Buy 10g:Wooden Staff'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'staff(1.4,25)' value = 'Buy 25g:Tin Staff'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'staff(1.6,50)' value = 'Buy 50g:Silver Staff'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'staff(1.8,75)' value = 'Buy 75g:Golden Staff'>";
+			document.getElementById("strength_monster").innerHTML += "<input type='button' onclick = 'staff(2,100)' value = 'Buy 100g:Diamond Staff'>";
+
+		}
+//-------------------------------------------------------------------------------
+		function sword(percent,price){
+			if(gold >= price){
+				hands = percent;
+				what();
+				gold -= price;
+				document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+			}
+		}
+		function armor(percent,price){
+			if(gold >= price){
+				armor = percent;
+				what();
+				gold -= price;
+				document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+			}
+		}
+		function staff(percent,price){
+			if(gold >= price){
+				staff = percent;
+				what();
+				gold -= price;
+				document.getElementById("gold").innerHTML = "Gold:"+gold+"";
+			}
+		}
+//-------------------------------------------------------------------------------
+		function dungeon(){
+			document.getElementById("agility_monster").innerHTML = "";
+			document.getElementById("magic").innerHTML = "";
+			document.getElementById("strength_monster").innerHTML = "";
+			document.getElementById("town").innerHTML = '<input type="button" onclick = "town()" value = "Go to town">';
+			document.getElementById("dungeon").innerHTML = '<input type="button" onclick = "dungeon()" value = "Go to dungeon">';
+			var i = 1;
+			document.getElementById("lvldungeon").innerHTML = "";
+			document.getElementById("health_monster").innerHTML = "";
+			while(i<=lvl){
+				document.getElementById("but=1").innerHTML = "";
+				document.getElementById("but=2").innerHTML = "";
+				document.getElementById("lvldungeon").innerHTML += '<input onclick="lvldungeon('+i+')" type="button" value="Level Dungeon'+i+'">';
+				i ++;
+			}
+		}
+		function lvldungeon(i){
+			document.getElementById("but=1").innerHTML = "<input id = 'monster' type='button' onclick = 'monster("+i+")' value = 'search monster'>";
+			document.getElementById("but=2").innerHTML = "<input id = 'run' type='button' onclick = 'run()' value = 'run away'>";
+			document.getElementById("lvldungeon").innerHTML = "";
+
+		}
+//-------------------------------------------------------------------------------
+	</script>
+</body>
+</html>

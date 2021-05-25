@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8" />
+	<title>heroes</title>
+	<style type = "text/css">
+		.board{
+			width:900px;
+			height:900px;
+			background-color:grey;
+			display:grid;
+			grid-template-columns: 90px 90px 90px 90px 90px 90px 90px 90px 90px 90px;
+			grid-template-rows: 90px 90px 90px 90px 90px 90px 90px 90px 90px 90px;
+			grid-gap: 0px;
+			position:absolute;
+			grid-row:1;
+			grid-column:1;
+		}
+		.info{
+			width:400px;
+			height:900px;
+			position:absolute;
+			grid-row:1;
+			grid-column:2;
+		}
+		.big_board{
+			width:1300px;
+			height:900px;
+			grid-template-columns: 900px 900px;
+			grid-template-rows: 900px;
+			display:grid;
+			position:absolute;
+			grid-row:1;
+			grid-column:2;
+		}
+		.kvadrat_transparent{
+			width:90px;
+			height:90px;
+			background-color:transparent;
+			position:relative;
+		}
+		.kvadrat_yellow{
+			width:90px;
+			height:90px;
+			background-color:rgba(255,255,0,0.5);
+			position:relative;
+		}
+		.kvadrat_red{
+			width:90px;
+			height:90px;
+			background-color:rgba(255,0,0,0.5);
+			position:relative;
+		}
+		.kvadrat_red_mini{
+			width:90px;
+			height:90px;
+			background-color:rgba(255,0,0,0.25);
+			position:relative;
+		}
+		.kvadrat_green_mini{
+			width:90px;
+			height:90px;
+			background-color:rgba(0,255,0,0.25);
+			position:relative;
+		}
+	</style>
+</head>
+<dody>
+	<div class = "big_board">
+		<div id="board" class = "board"></div>
+		<div id="info" class = "info">
+		</div>
+	</div>
+	<script type = "text/javascript">
+	var whiteUnits = 0;
+	var blackUnits = 0;
+	var explosionStr = "";
+	var field = 0;
+	var water = 1;
+	var tree = 2;
+	var mountain = 3;
+	var humanWarrior = 0;
+	var humanMage = 1;
+	var humanSnake = 2;
+	var humanDragon = 3;
+	var undeadWarrior = 4;
+	var undeadMage = 5;
+	var undeadSnake = 6;
+	var undeadDragon = 7;
+	var move = [];
+	var squares = "";
+	var checkExplosion = false;
+	var whoMoves = undefined;
+	var arrayUnit = [[],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0]
+		];
+
+	var array = [[],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0],
+		[9,0,0,0,0,0,0,0,0,0,0]
+		];
+		newGame();
+//------------------------------------------------------------------------------
+		function newGame(){
+			randomBoard();
+			createUnits(0);
+			createUnits(1);
+			speed();
+			refreshScreen();
+		}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+	function refreshUnit(){
+		var str = "";
+		var y = 1;
+		var x = 1;
+		while(y < 11){
+			while(x < 11){
+				if(arrayUnit[y][x] != 0){
+					if(arrayUnit[y][x].type == 0){
+						str += '<img src="человек воин.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 1){
+						str += '<img src="человек маг.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 2){
+						str += '<img src="человек змея.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 3){
+						str += '<img src="человек дракон.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 4){
+						str += '<img src="нежить воин.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 5){
+						str += '<img src="нежить маг.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 6){
+						str += '<img src="нежить змея.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+					else if(arrayUnit[y][x].type == 7){
+						str += '<img src="нежить дракон.png" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')">';
+					}
+				}
+				x++;
+			}
+			x = 1;
+			y++;
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function speed(){
+		while (move.length == 0){
+			var y = 1;
+			while(y < 11){
+				var x = 1;
+				while(x < 11){
+					if (arrayUnit[y][x] != 0){
+						arrayUnit[y][x].speedy -= 1;
+						if(arrayUnit[y][x].speedy == 0){
+							move.push({y:y, x:x});
+						}
+					}
+					x++;
+				}
+				y++;
+			}
+		}
+		var random = move.length;
+		var pers = Math.floor(Math.random() * random);
+		whoMoves = move[pers];
+		move.splice(pers,1);
+		if(arrayUnit[whoMoves.y][whoMoves.x] == 0)speed();
+	}
+//------------------------------------------------------------------------------
+	function choice(whoMoves){
+		var str = "";
+		var varAttackDragon = false;
+		var varAttackMage = false;
+		var y = whoMoves.y;
+		var x = whoMoves.x;
+		var whiteOrBlack = arrayUnit[y][x].type > 3 ? "black" : "white" ;
+		var another = whiteOrBlack == "white" ? "black" : "white" ;
+		var friend = whiteOrBlack;
+		str += '<div onclick="pass('+y+','+x+')" class="kvadrat_green_mini" style="grid-row:'+(y)+';grid-column:'+(x)+';" onmouseover="showInfo('+y+','+x+')"></div>';
+		var Yy = y-1;
+		while(Yy < y+2){
+			var Xx = x-1;
+			while(Xx < x+2){
+				if(!(Yy == y && Xx == x) && insideBoard(Yy,Xx)){
+					if(arrayUnit[Yy][Xx] == 0 && checkLocality(y,x,Yy,Xx)){
+						str += '<div onclick="Move('+y+','+x+','+Yy+','+Xx+')" class="kvadrat_yellow" style="grid-row:'+(Yy)+';grid-column:'+(Xx)+';"></div>';
+					}
+					if(enemy(y,x,Yy,Xx)){
+						str += '<div onclick="attack('+y+','+x+','+Yy+','+Xx+')" class="kvadrat_red" style="grid-row:'+(Yy)+';grid-column:'+(Xx)+';"onmouseover="showInfo('+Yy+','+Xx+')"></div>';
+					}
+					if((arrayUnit[y][x].type == humanDragon || arrayUnit[y][x].type == undeadDragon) && varAttackDragon == false){
+						str += attackDragon(y,x);
+						varAttackDragon = true;
+					}
+					if((arrayUnit[y][x].type == humanMage || arrayUnit[y][x].type == undeadMage)&& varAttackMage == false){
+						str += checkEnemyMage(y,x);
+						varAttackMage = true;
+					}
+				}
+				Xx++;
+			}
+			Yy++;
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function checkEnemyMage(y,x){
+		var str = "";
+		var Yy = y-4;
+		while(Yy <= y+4){
+			var Xx = x-4;
+			while(Xx <= x+4){
+				if (enemy(y,x,Yy,Xx)){
+					str += '<div onclick="attackMage('+y+','+x+','+Yy+','+Xx+')" class="kvadrat_red" style="grid-row:'+(Yy)+';grid-column:'+(Xx)+';"onmouseover="showAttack('+Yy+','+Xx+')"></div>';
+				}
+				Xx++;
+			}
+			Yy++;
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function attackMage(iy,ix,ey,ex){
+		var y = ey - 1;
+		while(y <= ey + 1){
+			var x = ex - 1;
+			while(x <= ex + 1){
+				if(arrayUnit[y][x] != 0){
+					arrayUnit[y][x].health -= arrayUnit[iy][ix].damage / 2;
+					if(y == ey && x == ex) arrayUnit[y][x].health -= arrayUnit[iy][ix].damage / 2;
+				}
+				checkDeath(y,x);
+				x++;
+			}
+			y++;
+		}
+		pass(iy,ix);
+	}
+//------------------------------------------------------------------------------
+	function showAttack(y,x){
+		if(checkExplosion) {
+			checkExplosion = false;
+			return;
+		}
+		showInfo(y,x);
+		var Yy = y-1;
+		var str = "";
+		while(Yy <= y+1){
+			var Xx = x-1;
+			while(Xx <= x+1){
+				if(!(Yy == y && Xx == x)){
+					str += '<div class="kvadrat_red_mini" style="grid-row:'+(Yy)+';grid-column:'+(Xx)+';" onmouseover="showInfo('+Yy+','+Xx+')"></div>';
+				}
+				Xx++;
+			}
+			Yy++;
+		}
+		checkExplosion = true;
+		explosionStr = str;
+		refreshScreen();
+	}
+//------------------------------------------------------------------------------
+	function checkDeath(y,x){
+		if (arrayUnit[y][x].health <= 0){
+			if(arrayUnit[y][x].type >= 4){
+				blackUnits--;
+				if(blackUnits == 0)gameOver(0);
+			}
+			if(arrayUnit[y][x].type <= 3){
+				whiteUnits--;
+				if(whiteUnits == 0)gameOver(1);
+			}
+			arrayUnit[y][x] = 0;
+		}
+
+	}
+//------------------------------------------------------------------------------
+	function gameOver(who){
+		if(who == 0){
+			alert("White Win");
+			newGame();
+		}
+		else {
+			alert("Black Win");
+			newGame();
+		}
+	}
+//------------------------------------------------------------------------------
+	function refreshScreen(){
+		var str = "";
+		str += refreshBoard();
+		str += refreshUnit();
+		str += choice(whoMoves);
+		str += explosionStr;
+		document.getElementById("board").innerHTML = str;
+	}
+//------------------------------------------------------------------------------
+	function attackDragon(y,x){
+		var str = "";
+		if(enemy(y,x,y-1,x-1) || enemy(y,x,y-2,x-2) || enemy(y,x,y-3,x-3)){
+			str += damageDragon(y,x,y-1,x-1,y-2,x-2,y-3,x-3);
+		}
+		if(enemy(y,x,y-1,x) || enemy(y,x,y-2,x) || enemy(y,x,y-3,x)){
+			str += damageDragon(y,x,y-1,x,y-2,x,y-3,x);
+		}
+		if(enemy(y,x,y-1,x+1) || enemy(y,x,y-2,x+2) || enemy(y,x,y-3,x+3)){
+			str += damageDragon(y,x,y-1,x+1,y-2,x+2,y-3,x+3);
+		}
+		if(enemy(y,x,y,x+1) || enemy(y,x,y,x+2) || enemy(y,x,y,x+3)){
+			str += damageDragon(y,x,y,x+1,y,x+2,y,x+3);
+		}
+		if(enemy(y,x,y+1,x+1) || enemy(y,x,y+2,x+2) || enemy(y,x,y+3,x+3)){
+			str += damageDragon(y,x,y+1,x+1,y+2,x+2,y+3,x+3);
+		}
+		if(enemy(y,x,y+1,x) || enemy(y,x,y+2,x) || enemy(y,x,y+3,x)){
+			str += damageDragon(y,x,y+1,x,y+2,x,y+3,x);
+		}
+		if(enemy(y,x,y+1,x-1) || enemy(y,x,y+2,x-2) || enemy(y,x,y+3,x-3)){
+			str += damageDragon(y,x,y+1,x-1,y+2,x-2,y+3,x-3);
+		}
+		if(enemy(y,x,y,x-1) || enemy(y,x,y,x-2) || enemy(y,x,y,x-3)){
+			str += damageDragon(y,x,y,x-1,y,x-2,y,x-3);
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function damageDragon(iy,ix,ey,ex,ey2,ex2,ey3,ex3){
+		var str = "";
+		if(insideBoard(ey,ex) && arrayUnit[ey][ex] != 0 && enemy(iy,ix,ey,ex)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" class="kvadrat_red" '+
+			'style="grid-row:'+(ey)+';grid-column:'+(ex)+';"onmouseover="showInfoDragon('+ey2+','+ex2+','+ey3+','+ex3+','+ey+','+ex+')"></div>';
+		}
+		else if (insideBoard(ey,ex)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" style="grid-row:'+(ey)+';grid-column:'+(ex)+';""></div>';
+		}
+
+		if(insideBoard(ey2,ex2) && arrayUnit[ey2][ex2] != 0 && enemy(iy,ix,ey2,ex2)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" class="kvadrat_red" '+
+			' style="grid-row:'+(ey2)+';grid-column:'+(ex2)+';"onmouseover="showInfoDragon('+ey+','+ex+','+ey3+','+ex3+','+ey2+','+ex2+')"></div>';
+		}
+		else if (insideBoard(ey2,ex2)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" style="grid-row:'+(ey2)+';grid-column:'+(ex2)+';""></div>';
+		}
+
+		if(insideBoard(ey3,ex3) && arrayUnit[ey3][ex3] != 0 && enemy(iy,ix,ey3,ex3)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" '+
+			'class="kvadrat_red" style="grid-row:'+(ey3)+';grid-column:'+(ex3)+';"onmouseover="showInfoDragon('+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')"></div>';
+		}
+		else if (insideBoard(ey3,ex3)){
+			str += '<div onclick="calcDD('+iy+','+ix+','+ey+','+ex+','+ey2+','+ex2+','+ey3+','+ex3+')" style="grid-row:'+(ey3)+';grid-column:'+(ex3)+';""></div>';
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function showInfoDragon(y1,x1,y2,x2,ey,ex){
+		if(checkExplosion) {
+			checkExplosion = false;
+			return;
+		}
+		showInfo(ey,ex);
+		var str = "";
+		str += '<div class="kvadrat_red_mini" style="grid-row:'+(y1)+';grid-column:'+(x1)+';" onmouseover="showInfo('+y1+','+x1+')"></div>';
+		str += '<div class="kvadrat_red_mini" style="grid-row:'+(y2)+';grid-column:'+(x2)+';" onmouseover="showInfo('+y2+','+x2+')"></div>';
+		checkExplosion = true;
+		explosionStr = str;
+		refreshScreen();
+	}
+//------------------------------------------------------------------------------
+	function checkLocality(iy,ix,ly,lx){
+		if(arrayUnit[iy][ix].type == humanWarrior || arrayUnit[iy][ix].type == undeadWarrior){
+			if (array[ly][lx] == field)return true;
+			else if (array[ly][lx] == water)return false;
+			else if (array[ly][lx] == tree)return true;
+			else if (array[ly][lx] == mountain)return false;
+		}
+		else if(arrayUnit[iy][ix].type == humanMage || arrayUnit[iy][ix].type == undeadMage){
+			if (array[ly][lx] == field)return true;
+			else if (array[ly][lx] == water)return false;
+			else if (array[ly][lx] == tree)return true;
+			else if (array[ly][lx] == mountain)return false;
+		}
+		else if(arrayUnit[iy][ix].type == humanSnake || arrayUnit[iy][ix].type == undeadSnake){
+			if (array[ly][lx] == field)return true;
+			else if (array[ly][lx] == water)return true;
+			else if (array[ly][lx] == tree)return true;
+			else if (array[ly][lx] == mountain)return false;
+		}
+		else if(arrayUnit[iy][ix].type == humanDragon || arrayUnit[iy][ix].type == undeadDragon){
+			return true;
+		}
+	}
+//------------------------------------------------------------------------------
+	function attack(iy,ix,ey,ex){
+		if(arrayUnit[iy][ix].type == humanSnake || arrayUnit[iy][ix].type == undeadSnake){
+			if(arrayUnit[ey][ex].poison == 0) arrayUnit[ey][ex].poison = 10;
+			else arrayUnit[ey][ex].poison *= 2;
+		}
+		arrayUnit[ey][ex].health -= arrayUnit[iy][ix].damage;
+		checkDeath(ey,ex);
+		pass(iy,ix);
+	}
+//------------------------------------------------------------------------------
+	function checkPoison(y,x){
+		arrayUnit[y][x].health -= arrayUnit[y][x].poison;
+		checkDeath(y,x);
+	}
+//------------------------------------------------------------------------------
+	function calcDD(iy,ix,ey,ex,ey2,ex2,ey3,ex3){
+		if(arrayUnit[ey][ex] != 0){
+			arrayUnit[ey][ex].health -= arrayUnit[iy][ix].damage;
+			checkDeath(ey,ex);
+		}
+		if(arrayUnit[ey2][ex2] != 0){
+			arrayUnit[ey2][ex2].health -= arrayUnit[iy][ix].damage;
+			checkDeath(ey2,ex2);
+		}
+		if(arrayUnit[ey3][ex3] != 0){
+			arrayUnit[ey3][ex3].health -= arrayUnit[iy][ix].damage;
+			checkDeath(ey3,ex3);
+		}
+		pass(iy,ix);
+	}
+//------------------------------------------------------------------------------
+	function enemy(iy,ix,ey,ex){
+		if(insideBoard(iy,ix) && insideBoard(ey,ex) && arrayUnit[ey][ex] != 0){
+			var me = arrayUnit[iy][ix].type >= 4;
+			var other = arrayUnit[ey][ex].type >= 4;
+			return me != other;
+		}
+		return false;
+	}
+//------------------------------------------------------------------------------
+	function Move(oldY,OldX,newY,NewX){
+		arrayUnit[newY][NewX] = arrayUnit[oldY][OldX];
+		arrayUnit[oldY][OldX] = 0;
+		pass(newY,NewX);
+	}
+//------------------------------------------------------------------------------
+	function pass(y,x){
+		arrayUnit[y][x].speedy = arrayUnit[y][x].maxSpeedy;
+		checkPoison(y,x);
+		speed();
+		explosionStr = "";
+		refreshScreen();
+	}
+//------------------------------------------------------------------------------
+	function insideBoard(y,x) {
+		return y < 11 && y > 0 && x < 11 && x > 0;
+	}
+//------------------------------------------------------------------------------
+	function refreshBoard(){
+		var str = "";
+		var x = 1;
+		var y = 1;
+		while(y < 11){
+			while(x < 11){
+				if(array[y][x] == water){
+					str += '<img src="вода.png" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+				}
+				else if(array[y][x] == tree){
+					str += '<img src="дерево.png" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+				}
+				else if(array[y][x] == mountain){
+					str += '<img src="гора.png" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+				}
+				else if(array[y][x] == field){
+					str += '<img src="поле.png" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+				}
+				x++;
+			}
+			x = 1;
+			y++;
+		}
+		return str;
+	}
+//------------------------------------------------------------------------------
+	function showInfo(y,x){
+		if(explosionStr != ""){
+			explosionStr = "";
+			refreshScreen();
+		}
+		var health = arrayUnit[y][x].health;
+		var damage = arrayUnit[y][x].damage;
+		var type = arrayUnit[y][x].type;
+		var speedy = arrayUnit[y][x].maxSpeedy;
+		var poison = arrayUnit[y][x].poison;
+		if(type == 0 || type == 4)type = "Warrior";
+		else if(type == 1 || type == 5)type = "Mage";
+		else if(type == 2 || type == 6)type = "Snake";
+		else if(type == 3 || type == 7)type = "Dragon";
+		document.getElementById("info").innerHTML = ""+type+"<br /> health = "+health+" <br /> damage = " +damage+ " <br /> speed = " +speedy+ "<br /> poison = " +poison+ "";
+	}
+//------------------------------------------------------------------------------
+	function randomBoard(){
+		var y = 1;
+		var x = 1;
+		while (y < 11){
+			while (x < 11){
+				var chance = Math.floor(Math.random() * 100);
+				if(chance < 45)array[y][x] = field;
+				else if(chance > 45 && chance < 65)array[y][x] = water;
+				else if(chance > 65 && chance < 90)array[y][x] = tree;
+				else array[y][x] = mountain;
+				x++;
+			}
+			x = 1;
+			y++;
+		}
+	}
+//------------------------------------------------------------------------------
+	function createUnits(race){
+		var pers = Math.floor(Math.random() * 4 + 6);
+		if (race == 0){
+			var diference = 0;
+			var diferenceX = 1;
+			whiteUnits = pers;
+			//var unit = 2;
+		}
+		else{
+			var diference = 4;
+			var diferenceX = 8;
+			blackUnits = pers;
+			//var unit = 6;
+		}
+		while(pers > 0){
+			var posY = Math.floor(Math.random() * 10 + 1);
+			var posX = Math.floor(Math.random() * 3 + diferenceX);
+			if(arrayUnit[posY][posX] != 0) continue;
+			var unit = Math.floor(Math.random() * 4 + diference);
+			var health = Math.floor(Math.random() * 85 + 15);
+			var damage = Math.floor(Math.random() * 60);
+			var speedy = Math.floor(Math.random() * 6 + 3);
+			var maxSpeedy = speedy;
+			if((unit == humanMage + diference) && array[posY][posX] == water || (unit == humanMage + diference) && array[posY][posX] == mountain){
+				while(array[posY][posX] == water || array[posY][posX] == mountain){
+					posY = Math.floor(Math.random() * 10 + 1);
+					posX = Math.floor(Math.random() * 3 + diferenceX);
+				}
+			}
+			if(unit == humanMage + diference){
+				speedy += 1;
+				maxSpeedy += 1;
+			}
+			if((unit == humanWarrior + diference) && array[posY][posX] == water || (unit == humanWarrior + diference) && array[posY][posX] == mountain){
+				while(array[posY][posX] == water || array[posY][posX] == mountain){
+					posY = Math.floor(Math.random() * 10 + 1);
+					posX = Math.floor(Math.random() * 3 + diferenceX);
+				}
+			}
+			if((unit == humanSnake + diference) && array[posY][posX] == mountain){
+				while(array[posY][posX] == mountain){
+					posY = Math.floor(Math.random() * 10 + 1);
+					posX = Math.floor(Math.random() * 3 + diferenceX);
+				}
+			}
+			if(unit == humanDragon + diference){
+				speedy += 3;
+				maxSpeedy += 3;
+			}
+			arrayUnit[posY][posX] = {type : unit, health : health, poison : 0, damage : damage, speedy : speedy, maxSpeedy : maxSpeedy}
+			pers--;
+		}
+	}
+//------------------------------------------------------------------------------
+	</script>
+</body>
+</html>

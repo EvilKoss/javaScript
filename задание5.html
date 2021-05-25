@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>zadanie</title>
+</head>
+<body>
+	<image src="../../HomeWork/figma/src/components/icon4.svg"/>
+	<image src="../../HomeWork/figma/src/components/client1.svg" alt=''/>
+	<input id="in" type="number"/>
+	<input type="button" onclick="fizzbuzz()" value="Кнопка"/>
+	<script type="text/javascript">
+	function fizzbuzz(){
+		var i = document.getElementById("in").value;
+		if(i % 3 == 0 && i % 5 == 0) {
+			document.write("fizzbuzz");}
+		else if(i % 5 == 0) {
+			document.write("buzz");}
+		else if(i % 3 == 0) {
+			document.write("fizz");}
+		else {
+		    document.write("nihuya");
+		}
+	}
+	</script>
+</body>
+</html>

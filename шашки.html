@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Шашки</title>
+	<style type="text/css">
+		.board{
+			width:800px;
+			height:800px;
+			background-color:rgb(240,217,181);
+			display:grid;
+			grid-template-columns: 100px 100px 100px 100px 100px 100px 100px 100px;
+			grid-template-rows: 100px 100px 100px 100px 100px 100px 100px 100px;
+			grid-gap: 0px;
+			position:absolute;
+		}
+		.kvadrat_black{
+			width:100px;
+			height:100px;
+			background-color:rgb(181,136,99);
+			position:relative;
+		}
+		.kvadrat_choice{
+			width:100px;
+			height:100px;
+			background-color:yellow;
+			position:relative;
+		}
+	</style>
+</head>
+<body>
+	<div class="board" id="board">
+		<!--<img src="black_pawn.svg" onclick="vubor()" class="kvadrat_black" style="grid-row:1;grid-column:2;">-->
+	</div>
+	<script type="text/javascript">
+		var whitePawn = 1;
+		var hod = 1;
+		var masiv = [];
+		var possibleMove = []; // возможно пригодиться
+		var inProgress = false;
+		gameOver();
+
+
+		//alert (JSON.stringify(masiv));
+//------------------------------------------------------------------------------
+		function insideBoard(x,y) {
+			return y < 9 && y > 0 && x < 9 && x > 0;
+		}
+//------------------------------------------------------------------------------
+		function newBoard(){
+			document.getElementById("board").innerHTML = "";
+			x = 1;
+			y = 1;
+			while(y<9){
+				while(x<9){
+					if (masiv[y][x] === whitePawn){
+						document.getElementById("board").innerHTML += '<img src="white_pawn.svg" onclick="choice('+x+','+y+')" class="kvadrat_black" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if (masiv[y][x] === 2){
+						document.getElementById("board").innerHTML += '<img src="black_pawn.svg" onclick="choice('+x+','+y+')" class="kvadrat_black" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if (masiv[y][x] === 0){
+						document.getElementById("board").innerHTML += '<div class="kvadrat_black" style="grid-row:'+(y)+';grid-column:'+(x)+';"></div>';
+					}
+					else if (masiv[y][x] === 5){
+						document.getElementById("board").innerHTML += '<img src="white_queen.svg" onclick="choice('+(x)+','+(y)+')" class="kvadrat_black" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if (masiv[y][x] === 7){
+						document.getElementById("board").innerHTML += '<img src="black_queen.svg" onclick="choice('+(x)+','+(y)+')" class="kvadrat_black" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if (masiv[y][x] === 9){}
+					else{alert("else")}
+					x++;
+				}
+				x = 1;
+				y++;
+			}
+		}
+//------------------------------------------------------------------------------
+		function choice(x,y){
+			if(inProgress) return;
+			newBoard();
+			if(hod % 2 == 1 && masiv[y][x] == 2){
+				return;
+			}
+			else if(hod % 2 == 0 && masiv[y][x] == 1){
+				return;
+			}
+			else if(hod % 2 == 0 && masiv[y][x] == 5){
+				return;
+			}
+			else if(hod % 2 == 1 && masiv[y][x] == 7){
+				return;
+			}
+			var for_screen = hod % 2 == 1 ? -1 : +1 ;
+			if (masiv[y][x] === 5 || masiv[y][x] === 7) queenCheck(x,y);
+			if (insideBoard(x-1,y+for_screen)  && masiv[y+for_screen][x-1] == 0){
+				document.getElementById("board").innerHTML += '<div onclick="move('+(x-1)+','+(y+for_screen)+','+x+','+y+')" class="kvadrat_choice" style="grid-row:'+(y+for_screen)+';grid-column:'+(x-1)+';"></div>';
+			}
+			if (insideBoard(x+1,y+for_screen)  && masiv[y+for_screen][x+1] == 0){
+				document.getElementById("board").innerHTML += '<div onclick="move('+(x+1)+','+(y+for_screen)+','+x+','+y+')" class="kvadrat_choice" style="grid-row:'+(y+for_screen)+';grid-column:'+(x+1)+';"></div>';
+			}
+			check(x,y);
+		}
+//------------------------------------------------------------------------------
+		function move(x,y,oldX,oldY){
+			if (hod % 2 == 1){
+				if(masiv[oldY][oldX] == 1){
+					masiv[y][x] = 1;
+					masiv[oldY][oldX] = 0;
+					whiteQueen(x,y);
+					blackQueen(x,y);
+				}
+				else if(masiv[oldY][oldX] == 5){
+					masiv[y][x] = 5;
+					masiv[oldY][oldX] = 0;
+				}
+				hod++;
+			}
+			else if (hod % 2 == 0){
+				if (masiv[oldY][oldX] == 2){
+					masiv[y][x] = 2;
+					masiv[oldY][oldX] = 0;
+					whiteQueen(x,y);
+					blackQueen(x,y);
+				}
+				else if(masiv[oldY][oldX] == 7){
+					masiv[y][x] = 7;
+					masiv[oldY][oldX] = 0;
+				}
+				hod++;
+			}
+			whiteQueen(x,y);
+			blackQueen(x,y);
+			newBoard();
+		}
+//------------------------------------------------------------------------------
+		function take(x,y,oldX,oldY,anotherX,anotherY){
+			if (hod % 2 == 1){
+				if (masiv[oldY][oldX] == 1){
+					masiv[y][x] = 1;
+					masiv[anotherY][anotherX] = 0;
+					masiv[oldY][oldX] = 0;
+				}
+				else if(masiv[oldY][oldX] == 5){
+					masiv[y][x] = 5;
+					masiv[anotherY][anotherX] = 0;
+					masiv[oldY][oldX] = 0;
+				}
+			}
+			else if (hod % 2 == 0){
+				if(masiv[oldY][oldX] == 2){
+					masiv[y][x] = 2;
+					masiv[anotherY][anotherX] = 0;
+					masiv[oldY][oldX] = 0;
+				}
+				else if(masiv[oldY][oldX] == 7){
+					masiv[y][x] = 7;
+					masiv[anotherY][anotherX] = 0;
+					masiv[oldY][oldX] = 0;
+				}
+			}
+			newBoard();
+			inProgress = true;
+			if (masiv[y][x] == 5 || masiv[y][x] == 7){
+				var dobavili = queenCheck(x,y);
+			}
+			else{
+				var dobavili = check(x,y);
+			}
+			whiteQueen(x,y);
+			blackQueen(x,y);
+			if(dobavili) inProgress = true;
+			if(!dobavili){
+				hod++;
+				inProgress = false;
+			}
+			var i = 1;
+			var j = 0;
+			var black = [];
+			var white = [];
+			while(i < 9){
+				while(j < 9){
+					if (masiv[i][j] == 1 || masiv[i][j] == 5){
+						white.push(masiv[i][j]);
+						//alert(white.length);
+					}
+					else if (masiv[i][j] == 2 || masiv[i][j] == 7){
+						black.push(masiv[i][j]);
+					}
+					else{}
+					j++
+				}
+				i++
+				j = 0
+			}
+			if (white.length == 0){
+				gameOver();
+			}
+			else if (black.length == 0){
+				gameOver();
+			}
+		}
+//------------------------------------------------------------------------------
+		function check(x,y){
+			var moveHod = 0;
+			var another = hod % 2 == 1 ? 2 : 1 ;
+			var anotherQueen = hod % 2 == 1 ? 7 : 5 ;
+			if (enemy(x-1,y-1)){
+				var anotherX = x-1;
+				var anotherY = y-1;
+				if (insideBoard(x-2,y-2) && masiv[y-2][x-2] === 0){
+					moveHod++;
+					document.getElementById("board").innerHTML += '<div onclick="take('+(x-2)+','+(y-2)+','+x+','+y+','+anotherX+','+anotherY+')" class="kvadrat_choice" style="grid-row:'+(y-2)+';grid-column:'+(x-2)+';"></div>';
+				}
+			}
+			if (enemy(x+1,y-1)){
+				var anotherX = x+1;
+				var anotherY = y-1;
+				if (insideBoard(x+2,y-2) && masiv[y-2][x+2] === 0){
+					moveHod++;
+					document.getElementById("board").innerHTML += '<div onclick="take('+(x+2)+','+(y-2)+','+x+','+y+','+anotherX+','+anotherY+')" class="kvadrat_choice" style="grid-row:'+(y-2)+';grid-column:'+(x+2)+';"></div>';
+				}
+			}
+			if (enemy(x-1,y+1)){
+				var anotherX = x-1;
+				var anotherY = y+1;
+				if (insideBoard(x-2,y+2) && masiv[y+2][x-2] === 0){
+					moveHod++;
+					document.getElementById("board").innerHTML += '<div onclick="take('+(x-2)+','+(y+2)+','+x+','+y+','+anotherX+','+anotherY+')" class="kvadrat_choice" style="grid-row:'+(y+2)+';grid-column:'+(x-2)+';"></div>';
+				}
+			}
+			if (enemy(x+1,y+1)){
+				var anotherX = x+1;
+				var anotherY = y+1;
+				if (insideBoard(x+2,y+2) && masiv[y+2][x+2] === 0){
+					moveHod++;
+					document.getElementById("board").innerHTML += '<div onclick="take('+(x+2)+','+(y+2)+','+x+','+y+','+anotherX+','+anotherY+')" class="kvadrat_choice" style="grid-row:'+(y+2)+';grid-column:'+(x+2)+';"></div>';
+				}
+			}
+			return moveHod !== 0;
+		}
+//------------------------------------------------------------------------------
+		function whiteQueen(x,y){
+			if(hod % 2 == 1){
+				if(y == 1){
+					masiv[y][x] = 5;
+					newBoard();
+					queenCheck(x,y);
+				}
+			}
+		}
+//------------------------------------------------------------------------------
+		function blackQueen(x,y){
+			if(hod % 2 == 0){
+				if(y == 8){
+					masiv[y][x] = 7;
+					newBoard();
+					queenCheck(x,y);
+				}
+			}
+		}
+//------------------------------------------------------------------------------
+		function queenCheckDir(x,y,dirX,dirY){
+			var enemyFound = false;
+			var checkX = x+dirX;
+			var checkY = y+dirY;
+			var moveHod = 0;
+			if(enemy(checkX,checkY) && masiv[checkY+dirY][checkX+dirX] === 0){
+				var anotherX = checkX;
+				var anotherY = checkY;
+				checkX += dirX;
+				checkY += dirY;
+				enemyFound = true;
+			}
+			while(insideBoard(checkX,checkY) && masiv[checkY][checkX] === 0){
+				if (enemyFound == false){
+					if(!inProgress){
+						document.getElementById("board").innerHTML += '<div onclick="move('+(checkX)+','+(checkY)+','+x+','+y+')" class="kvadrat_choice" style="grid-row:'+(checkY)+';grid-column:'+(checkX)+';"></div>';
+					}
+				}
+				else{
+					document.getElementById("board").innerHTML += '<div onclick="take('+(checkX)+','+(checkY)+','+x+','+y+','+anotherX+','+anotherY+')" class="kvadrat_choice" style="grid-row:'+(checkY)+';grid-column:'+(checkX)+';"></div>';
+					moveHod++;
+				}
+				checkX += dirX;
+				checkY += dirY;
+				if (enemy(checkX,checkY) && insideBoard(checkX+dirX,checkY+dirY) && masiv[checkY+dirY][checkX+dirX] == 0 && enemyFound == false){
+					var anotherX = checkX;
+					var anotherY = checkY;
+					enemyFound = true;
+					checkX += dirX;
+					checkY += dirY;
+				}
+			}
+			return moveHod !== 0;
+		}
+//------------------------------------------------------------------------------
+		function queenCheck(x,y){
+			var moveHod = 0;
+			if(queenCheckDir(x,y,-1,-1)) moveHod++;
+			if(queenCheckDir(x,y,+1,-1)) moveHod++;
+			if(queenCheckDir(x,y,-1,+1)) moveHod++;
+			if(queenCheckDir(x,y,+1,+1)) moveHod++;
+			return moveHod !== 0;
+		}
+
+//------------------------------------------------------------------------------
+		function enemy(x,y){
+			var another = hod % 2 == 1 ? 2 : 1;
+			var anotherQueen = hod % 2 == 1 ? 7 : 5;
+			if(insideBoard(x,y) && (masiv[y][x] === another || masiv[y][x] === anotherQueen)) return true;
+			else{return false}
+		}
+//------------------------------------------------------------------------------
+		function new_game(){
+			var i = 1;
+			masiv = [[]];
+			while (i<9){
+				masiv.push([9,9,9,9,9,9,9,9,9])
+				i++;
+			}
+			var x = 2;
+			var y = 1;
+			while(y < 4){
+				while (x < 9){
+					masiv[y][x] = 2;
+					x += 2
+				}
+				if (y % 2 == 0){
+					x = 2;
+				}
+				else{
+					x = 1;
+				}
+				y++;
+			}
+			masiv[4] = [9,0,9,0,9,0,9,0,9]
+			masiv[5] = [0,9,0,9,0,9,0,9,0]
+			var x = 1;
+			var y = 6;
+			while(y < 9){
+				while (x < 9){
+					masiv[y][x] = 1;
+					x += 2
+				}
+				if (y % 2 == 0){
+					x = 2;
+				}
+				else{
+					x = 1;
+				}
+				y++;
+			}
+			newBoard();
+		}
+//------------------------------------------------------------------------------
+		function gameOver(){
+			document.getElementById("board").innerHTML = '<div><input type="button" onclick = "new_game()" value = "GAME 2 PLAYERS"></div><br />';
+			// document.getElementById("board").innerHTML += '<div><input type="button" onclick = "new_game()" value = "GAME WHITE VS COMPUTER"></div><br /><br />';
+			// document.getElementById("board").innerHTML += '<div><input type="button" onclick = "new_game()" value = "GAME BLACK VS COMPUTER"></div>';
+		}
+//------------------------------------------------------------------------------
+
+	</script>
+</body>
+</html>

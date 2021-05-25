@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>zadanie</title>
+</head>
+<body>
+	<big>
+		<a>деньги = </a><a id="money">100</a>
+		<a>день =  </a><a id="data">1</a>
+		<a>час =  </a><a id="time">0</a>
+	</big>
+	<h2 id="kuric">Количество куриц = <a id="kol_kyric">0</a></h2>
+	<input id="kkyr" type="button" onclick="kypiy_kyric()" value="Купить курицу -10">
+	<h2 id="sviney">Количество свиней = <a id="kol_sviney">0</a></h2>
+	<input id="ksvin" type="button" onclick="kypiy_svinu()" value="Купить свинью -50">
+	<h2 id="korov">Количество коров = <a id="kol_korov">0</a></h2>
+	<input id="kkor" type="button" onclick="kypiy_korovy()" value="Купить корову -100">
+	<br/><br/><input type="button" value="СПАТЬ" onclick="spat()">
+	<script type="text/javascript">
+	setInterval(timer,500)
+	var vremya = 0;
+	var den = 1;
+	var money = 100;
+	var kol_kyric = 0;
+	var kol_sviney = 0;
+	var kol_korov = 0;
+	function spat(){
+		vremya = 0;
+		document.getElementById("time").innerHTML = vremya;
+		den += 1;
+		document.getElementById("data").innerHTML = den;
+		money += kol_kyric
+		money += kol_sviney * 5
+		money += kol_korov * 10
+		update_money()
+
+	}
+	function timer(){
+		document.getElementById("time").innerHTML = vremya;
+		if (vremya == 24){
+			spat();
+		}
+		vremya += 1;
+	}
+	function kypiy_kyric(){
+			money -= 10;
+			kol_kyric += 1;
+			document.getElementById("kol_kyric").innerHTML = kol_kyric;
+			update_money()
+	}
+	function kypiy_svinu(){
+			money -= 50;
+			kol_sviney += 1;
+			document.getElementById("kol_sviney").innerHTML = kol_sviney;
+			update_money()
+	}
+	function kypiy_korovy(){
+		money -= 100;
+		kol_korov += 1;
+		document.getElementById("kol_korov").innerHTML = kol_korov;
+		update_money()
+
+	}
+	function update_money(){
+		document.getElementById("money").innerHTML = money;
+		document.getElementById("kkyr").disabled = money>=10 ? false : true;
+		document.getElementById("ksvin").disabled = money>=50 ? false: true;
+		document.getElementById("kkor").disabled = money>=100 ? false: true;
+		//condition ? first : second
+	}
+	</script>
+</body>
+</html>

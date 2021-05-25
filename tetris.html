@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>tetris</title>
+	<style type = "text/css">
+		.board{
+			width:400px;
+			height:800px;
+			background-color:grey;
+			display:grid;
+			grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
+			grid-template-rows: 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
+			grid-gap: 0px;
+			position:absolute;
+		}
+		.kvadratBlue{
+			width:40px;
+			height:40px;
+			background-color:blue;
+			position:relative;
+		}
+		.kvadratWhite{
+			width:40px;
+			height:40px;
+			background-color:white;
+			position:relative;
+		}
+		.kvadratGrey{
+			width:40px;
+			height:40px;
+			background-color:grey;
+			position:relative;
+		}
+	</style>
+</head>
+<body>
+	<p id = "tyt">Score:</p>
+	<p id = "lvl">Level:</p>
+	<div id="board" class = "board">
+	<script type="text/javascript">
+		window.onkeydown = press;
+		var newF = Math.floor(Math.random() * 7);
+		var newPos = Math.floor(Math.random() * 4);
+		var f = Math.floor(Math.random() * 7);
+		var position = Math.floor(Math.random() * 4);
+		var speed = 400;
+		var lvl = 1;
+		var s = 0;
+		var centrY = 2;
+		var centrX = 5;
+		var timervar = setInterval(timer,speed);
+		// I = ****
+
+		// L =    *
+		// 		***
+
+		// J = *
+		//     ***
+
+		// O = **
+		//     **
+
+		// S =  **
+		//     **
+
+		// Z = **
+		//      **
+
+		// T =  *
+		//     ***
+		var array = [[],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+		];
+
+//------------------------------------------------------------------------------
+		var trafaret = [
+		//O
+		[[{y:0,x:0},{y:0,x:+1},{y:+1,x:0},{y:+1,x:+1}],[{y:0,x:0},{y:0,x:+1},{y:+1,x:0},{y:+1,x:+1}],
+				[{y:0,x:0},{y:0,x:+1},{y:+1,x:0},{y:+1,x:+1}],[{y:0,x:0},{y:0,x:+1},{y:+1,x:0},{y:+1,x:+1}]],
+		//I
+		[[{y:0,x:-1},{y:0,x:0},{y:0,x:+1},{y:0,x:+2}],[{y:-1,x:0},{y:0,x:0},{y:+1,x:0},{y:+2,x:0}],
+				[{y:0,x:-1},{y:0,x:0},{y:0,x:+1},{y:0,x:+2}],[{y:-1,x:0},{y:0,x:0},{y:+1,x:0},{y:+2,x:0}]],
+		//S
+		[[{y:-1,x:0},{y:-1,x:+1},{y:0,x:-1},{y:0,x:0}],[{y:-1,x:0},{y:0,x:0},{y:0,x:+1},{y:+1,x:+1}],
+				[{y:-1,x:0},{y:-1,x:+1},{y:0,x:-1},{y:0,x:0}],[{y:-1,x:0},{y:0,x:0},{y:0,x:+1},{y:+1,x:+1}]],
+		//Z
+		[[{y:-1,x:-1},{y:-1,x:0},{y:0,x:0},{y:0,x:+1}],[{y:-1,x:+1},{y:0,x:+1},{y:0,x:0},{y:+1,x:0}],
+				[{y:-1,x:-1},{y:-1,x:0},{y:0,x:0},{y:0,x:+1}],[{y:-1,x:+1},{y:0,x:+1},{y:0,x:0},{y:+1,x:0}]],
+		//T
+		[[{y:-1,x:0},{y:0,x:-1},{y:0,x:0},{y:0,x:+1}],[{y:-1,x:0},{y:0,x:0},{y:0,x:+1},{y:+1,x:0}],
+		 		[{y:0,x:-1},{y:0,x:0},{y:0,x:+1},{y:+1,x:0}],[{y:-1,x:0},{y:0,x:-1},{y:0,x:0},{y:+1,x:0}]],
+		//L
+		[[{y:-1,x:0},{y:0,x:0},{y:+1,x:0},{y:+1,x:+1}],[{y:0,x:-1},{y:0,x:0},{y:0,x:+1},{y:+1,x:-1}],
+		 		[{y:-1,x:-1},{y:-1,x:0},{y:0,x:0},{y:+1,x:0}],[{y:-1,x:+1},{y:0,x:-1},{y:0,x:0},{y:0,x:+1}]],
+		//J
+		[[{y:-1,x:0},{y:0,x:0},{y:+1,x:-1},{y:+1,x:0}],[{y:-1,x:-1},{y:0,x:-1},{y:0,x:0},{y:0,x:+1}],
+				 [{y:-1,x:0},{y:-1,x:+1},{y:0,x:0},{y:+1,x:0}],[{y:0,x:-1},{y:0,x:0},{y:0,x:+1},{y:+1,x:+1}]]
+		];
+//------------------------------------------------------------------------------
+		newGame();
+//------------------------------------------------------------------------------
+		function newGame(){
+			array = [[],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+				[9,0,0,0,0,0,0,0,0,0,0,3,3,3,3],
+			];
+			newF = Math.floor(Math.random() * 7);
+			newPos = Math.floor(Math.random() * 4);
+			f = Math.floor(Math.random() * 7);
+			position = Math.floor(Math.random() * 4);
+			speed = 400;
+			lvl = 1;
+			s = 0;
+			centrY = 2;
+			centrX = 5;
+			clearInterval(timervar);
+			timervar = setInterval(timer,speed);
+			document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+			document.getElementById("tyt").innerHTML = "Score:"+s+"";
+			newFigure();
+			updateScreen();
+		}
+//------------------------------------------------------------------------------
+		function updateScreen(){
+			var str = "";
+			var x = 1;
+			var y = 1;
+			while(y < 21){
+				while(x < 15){
+					if(array[y][x] == 1){
+						str += '<img  class="kvadratBlue" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if(array[y][x] == 2){
+						str += '<img  class="kvadratBlue" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if(array[y][x] == 0){
+						str += '<img  class="kvadratGrey" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					else if(array[y][x] == 3){
+						str += '<img  class="kvadratWhite" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+					}
+					x++;
+				}
+				x = 1;
+				y++;
+			}
+			document.getElementById("board").innerHTML = str;
+		}
+//------------------------------------------------------------------------------
+		function timer(){
+			eraseLine();
+			if (checkCollision(centrY+1,centrX,position)){
+				figure(1,centrY,centrX,f,position);
+				newFigure();
+			}else {
+				figure(0,centrY,centrX,f,position);
+				centrY++;
+				figure(2,centrY,centrX,f,position);
+			}
+			updateScreen();
+		}
+//------------------------------------------------------------------------------
+		function checkCollision(vary,varx,varPos){
+			var i = 0;
+			while(i < trafaret[f][position].length){
+				if (!insideBoard(trafaret[f][varPos][i].y + vary,trafaret[f][varPos][i].x + varx)){
+					return true;
+				}
+				else if (array[trafaret[f][varPos][i].y + vary][trafaret[f][varPos][i].x+ varx] == 1){
+					return true;
+				}
+				i++;
+			}
+		}
+//------------------------------------------------------------------------------
+		function newFigure(){
+			if(checkCollision(2,5,position)) {
+				alert("game over");
+				newGame();
+				return;
+			}
+			clearInterval(timervar);
+			timervar = setInterval(timer,speed);
+			f = newF;
+			position = newPos;
+			figure(2,2,5,f,position);
+			figure(3,2,12,f,position);
+			newF = Math.floor(Math.random() * 7);
+			newPos = Math.floor(Math.random() * 4);
+			figure(2,2,12,newF,newPos);
+			centrY = 2;
+			centrX = 5;
+		}
+//------------------------------------------------------------------------------
+		function press(event){
+			var i = 0;
+			if(event.code == "ArrowUp"){
+				var temporary = position+1;
+				if(temporary > 3) temporary = 0;
+				if (checkCollision(centrY,centrX,temporary))return;
+				else {
+					figure(0,centrY,centrX,f,position);
+					position = temporary;
+					figure(2,centrY,centrX,f,position);
+				}
+			}
+//------------------------------------------------------------------------------
+			else if(event.code == "ArrowDown"){
+				var temporary = position-1;
+				if(temporary < 0) temporary = 3;
+				if (checkCollision(centrY,centrX,temporary))return;
+				else {
+					figure(0,centrY,centrX,f,position);
+					position = temporary;
+					figure(2,centrY,centrX,f,position);
+				}
+			}
+//------------------------------------------------------------------------------
+			if(event.code == "ArrowLeft"){
+				if (checkCollision(centrY,centrX-1,position))return;
+				else {
+					figure(0,centrY,centrX,f,position);
+					centrX--;
+					figure(2,centrY,centrX,f,position);
+				}
+			}
+			else if(event.code == "ArrowRight"){
+				if (checkCollision(centrY,centrX+1,position))return;
+				else {
+					figure(0,centrY,centrX,f,position);
+					centrX++;
+					figure(2,centrY,centrX,f,position);
+				}
+			}
+			else if(event.code == "Space"){
+				clearInterval(timervar);
+				timervar = setInterval(timer,1);
+			}
+			updateScreen();
+		}
+
+//------------------------------------------------------------------------------
+		function eraseLine(){
+			var y = 20;
+			while (y > 0){
+				var check = 0;
+				var i = 1;
+				while(i < 11){
+					if (array[y][i] == 1) check++;
+					i++;
+				}
+				if(check == 10){
+					var u = y;
+					while (u > 1){
+						var j = 1;
+						while(j < 11){
+							array[u][j] = array[u-1][j];
+							j++;
+						}
+						u--;
+					}
+				}
+				y--;
+			}
+			updateScreen();
+		}
+//------------------------------------------------------------------------------
+		function figure(change,y,x,f,position){
+			var i = 0;
+			while(i < trafaret[f][position].length){
+				array[y + trafaret[f][position][i].y][x + trafaret[f][position][i].x] = change;
+				i++;
+			}
+		}
+//------------------------------------------------------------------------------
+		function insideBoard(y,x) {
+			return y < 21 && y > 0 && x < 11 && x > 0;
+		}
+		//конец игры
+//------------------------------------------------------------------------------
+	</script>
+
+</body>
+</html>

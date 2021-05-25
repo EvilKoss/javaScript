@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8" />
+	<title>Golovolomka</title>
+</head>
+<body>
+	<input id = "0" type="button" onclick="plus(0)" value="-">
+	<input id = "1" type="button" onclick="plus(1)" value="-">
+	<input id = "2" type="button" onclick="plus(2)" value="-">
+	<br/>
+	<input id = "7" type="button" onclick="plus(7)" value="-">
+	<a>"   "<a>
+	<input id = "3" type="button" onclick="plus(3)" value="-">
+	<br/>
+	<input id = "6" type="button" onclick="plus(6)" value="-">
+	<input id = "5" type="button" onclick="plus(5)" value="-">
+	<input id = "4" type="button" onclick="plus(4)" value="-">
+	<script type="text/javascript">
+	var a = 0;
+	var b = 0;
+	var c = 0;
+		function plus(i){
+			a = i;
+			b = i + 1;
+			c = i - 1;
+			if(b == 8){
+				b = 0
+			}
+			if(c == -1){
+				c = 7
+			}
+			document.getElementById(a).value = document.getElementById(a).value == "+" ? "-" : "+";
+			document.getElementById(b).value = document.getElementById(b).value == "+" ? "-" : "+";
+			document.getElementById(c).value = document.getElementById(c).value == "+" ? "-" : "+";
+		}
+	</script>
+</body>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>zadanie</title>
+</head>
+<body>
+	<p>введите первое число</p>
+	<input type="number"id='pch'/>
+	<br/>
+	<p>введите второе число</p>
+	<input type="number"id='vch'/>
+	<br/><br/>
+	<input type="button" onclick="plus()" value="+"/>
+	<input type="button" onclick="minus()" value="-"/>
+	<input type="button" onclick="ymnojit()" value="*"/>
+	<input type="button" onclick="podelit()" value="/"/>
+	<br/>
+	<p id='otvet'>OTBET</p>
+	<script type="text/javascript">
+	function plus(){document.getElementById("otvet").innerHTML=
+	Number(document.getElementById("pch").value) + Number(document.getElementById("vch").value);}
+
+	function minus(){document.getElementById("otvet").innerHTML=
+	Number(document.getElementById("pch").value) - Number(document.getElementById("vch").value);}
+
+	function ymnojit(){document.getElementById("otvet").innerHTML=
+	Number(document.getElementById("pch").value) * Number(document.getElementById("vch").value);}
+
+	function podelit(){document.getElementById("otvet").innerHTML=
+	Number(document.getElementById("pch").value) / Number(document.getElementById("vch").value);}
+	</script>
+</body>
+</html>

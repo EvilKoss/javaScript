@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>шахматы</title>
+	<style type="text/css">
+		.board{
+			width:800px;
+			height:800px;
+			background-color:rgb(240,217,181);
+			display:grid;
+			grid-template-columns: 100px 100px 100px 100px 100px 100px 100px 100px 100px;
+			grid-template-rows: 100px 100px 100px 100px 100px 100px 100px 100px;
+			grid-gap: 0px;
+			position:absolute;
+		}
+		.kvadrat_black{
+			width:100px;
+			height:100px;
+			background-color:rgb(181,136,99);
+			position:relative;
+		}
+		.kvadrat_transparent{
+			width:100px;
+			height:100px;
+			background-color:transparent;
+			position:relative;
+		}
+		.kvadrat_choice{
+			width:100px;
+			height:100px;
+			background-color:yellow;
+			position:relative;
+		}
+		.kvadrat_red{
+			width:100px;
+			height:100px;
+			background-color:red;
+			position:relative;
+		}
+	</style>
+</head>
+<body>
+	<div class="board" id="board">
+	</div>
+	<script type="text/javascript">
+	var whitePawn = 1;
+	var whiteRook = 2;
+	var whiteKnight = 3;
+	var whiteBishop = 4;
+	var whiteQueen = 5;
+	var whiteKing = 6;
+	var blackPawn = 7;
+	var blackRook = 8;
+	var blackKnight = 9;
+	var blackBishop = 10;
+	var blackQueen = 11;
+	var blackKing = 12;
+	var move = 1;
+	var possibleMove = 0;
+	var checkGameOver = false;
+	var enPassant = {y:0,x:0};
+	var blackKingMove = 0;
+	var whiteKingMove = 0;
+	var attackWhiteKing = false;
+	var attackBlackKing = false;
+	var promoteChoiceCheck = false;
+	var whiteRookLeft = 0;
+	var whiteRookRight = 0;
+	var blackRookLeft = 0;
+	var blackRookRight = 0;
+	var checkCheck = false;
+	var fightSquares = [];
+	var fight = false;
+	var whereWhiteKing = {y:8,x:5};
+	var whereBlackKing = {y:1,x:5};
+	var masiv = [[],
+[0,8,9,10,11,12,10,9,8],
+[0,7,7,7,7,7,7,7,7],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0],
+[0,1,1,1,1,1,1,1,1],
+[0,2,3,4,5,6,4,3,2]];
+	newGame();
+//------------------------------------------------------------------------------
+	function newGame(){
+		move = 1;
+		possibleMove = 0;
+		checkGameOver = false;
+		enPassant = {y:0,x:0};
+		blackKingMove = 0;
+		whiteKingMove = 0;
+		attackWhiteKing = false;
+		attackBlackKing = false;
+		promoteChoiceCheck = false;
+		whiteRookLeft = 0;
+		whiteRookRight = 0;
+		blackRookLeft = 0;
+		blackRookRight = 0;
+		checkCheck = false;
+		fightSquares = [];
+		fight = false;
+		whereWhiteKing = {y:8,x:5};
+		whereBlackKing = {y:1,x:5};
+		masiv = [[],
+	[0,8,9,10,11,12,10,9,8],
+	[0,7,7,7,7,7,7,7,7],
+	[0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0],
+	[0,1,1,1,1,1,1,1,1],
+	[0,2,3,4,5,6,4,3,2]];
+		board();
+	}
+//------------------------------------------------------------------------------
+	function gameOver(){
+		possibleMove = 0;
+		checkGameOver = true;
+		var yYy = 1;
+		var xXx = 1;
+		var offset = move % 2 == 1 ? 0 : blackPawn - whitePawn;
+		while(yYy < 9){
+			while(xXx < 9){
+				if (masiv[yYy][xXx] == whitePawn + offset){
+					checkPawn(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteRook + offset){
+					checkRook(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteKnight + offset){
+					checkKnight(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteBishop + offset){
+					checkBishop(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteQueen + offset){
+					checkQueen(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteKing + offset){
+					checkKing(yYy,xXx);
+				}
+				xXx++;
+			}
+			yYy++;
+			xXx = 1;
+		}
+		checkGameOver = false;
+		if (attackWhiteKing && possibleMove == 0){
+			alert("Победа чёрных");
+			newGame();
+		}
+		else if (attackBlackKing && possibleMove == 0){
+			alert("Победа белых");
+			newGame();
+		}
+		else if(!attackWhiteKing && !attackBlackKing && possibleMove == 0){
+			alert("Ничья");
+			newGame();
+		}
+	}
+//------------------------------------------------------------------------------
+	function board(){
+		drawBoard();
+		drawFigures();
+	}
+//------------------------------------------------------------------------------
+	function drawBoard(){
+		if(checkCheck == true || checkGameOver == true) return;
+		document.getElementById("board").innerHTML = "";
+		var i = 1;
+		var j = 2;
+		while (i < 9){
+			while (j < 9){
+				document.getElementById("board").innerHTML += '<img class="kvadrat_black" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				j += 2;
+			}
+			i++;
+			if(i%2 == 1){
+				j = 2;
+			}else{j = 1}
+		}
+		if (attackWhiteKing){
+			document.getElementById("board").innerHTML += '<img  class="kvadrat_red" style="grid-row:'+(whereWhiteKing.y)+';grid-column:'+(whereWhiteKing.x)+';">';
+		}
+		if (attackBlackKing){
+			document.getElementById("board").innerHTML += '<img  class="kvadrat_red" style="grid-row:'+(whereBlackKing.y)+';grid-column:'+(whereBlackKing.x)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function drawFigures(){
+		if(checkCheck == true || checkGameOver == true) return;
+		var i = 1;
+		var j = 1;
+		while (i < 9){
+			while (j < 9){
+				if(masiv[i][j] == whitePawn){
+					document.getElementById("board").innerHTML += '<img src="white_pawn.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == whiteRook){
+					document.getElementById("board").innerHTML += '<img src="white_rook.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == whiteKnight){
+					document.getElementById("board").innerHTML += '<img src="white_knight.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == whiteBishop){
+					document.getElementById("board").innerHTML += '<img src="white_bishop.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == whiteQueen){
+					document.getElementById("board").innerHTML += '<img src="white_queen.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == whiteKing){
+					document.getElementById("board").innerHTML += '<img src="white_king.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackPawn){
+					document.getElementById("board").innerHTML += '<img src="black_pawn.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackRook){
+					document.getElementById("board").innerHTML += '<img src="black_rook.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackKnight){
+					document.getElementById("board").innerHTML += '<img src="black_knight.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackBishop){
+					document.getElementById("board").innerHTML += '<img src="black_bishop.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackQueen){
+					document.getElementById("board").innerHTML += '<img src="black_queen.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				else if(masiv[i][j] == blackKing){
+					document.getElementById("board").innerHTML += '<img src="black_king.svg" onclick="choice('+i+','+j+')" class="kvadrat_transparent" style="grid-row:'+(i)+';grid-column:'+(j)+';">';
+				}
+				j++;
+			}
+			i++;
+			j = 1;
+		}
+	}
+
+//------------------------------------------------------------------------------
+	function insideBoard(y,x) {
+		return y < 9 && y > 0 && x < 9 && x > 0;
+	}
+//------------------------------------------------------------------------------
+	function choice(y,x){
+		if(promoteChoiceCheck)return;
+		if(move % 2 == 1 && masiv[y][x] >= 7){
+			return;
+		}
+		else if(move % 2 == 0 && masiv[y][x] >= 1 && masiv[y][x] <= 6){
+			return;
+		}
+		if(masiv[y][x] == whitePawn || masiv[y][x] == blackPawn){
+			checkPawn(y,x);
+		}
+		else if(masiv[y][x] == whiteRook || masiv[y][x] == blackRook){
+			checkRook(y,x);
+		}
+		else if(masiv[y][x] == whiteKnight || masiv[y][x] == blackKnight){
+			checkKnight(y,x);
+		}
+		else if(masiv[y][x] == whiteBishop || masiv[y][x] == blackBishop){
+			checkBishop(y,x);
+		}
+		else if(masiv[y][x] == whiteQueen || masiv[y][x] == blackQueen){
+			checkQueen(y,x);
+		}
+		else if(masiv[y][x] == whiteKing || masiv[y][x] == blackKing){
+			checkKing(y,x);
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkPawn(y,x){
+		var oldX = x;
+		var oldY = y;
+		var take = [];
+		var temporaryY = y;
+		drawBoard();
+		if (enPassant.y !== 0 && enPassant.x !== 0 && y == enPassant.y && (x == enPassant.x+1 || x == enPassant.x-1)){
+			temporaryY += move % 2 == 1 ? -1 : +1 ;
+			drawEnPassant(y,x,temporaryY,enPassant.x);
+		}
+		if (masiv[y][x] == whitePawn || masiv[y][x] == blackPawn){
+			y += move % 2 == 1 ? -1 : +1 ;
+			if (masiv[y][x] == 0){
+				drawMove(y,x,oldY,oldX);
+			}
+			if ((oldY == 7 && masiv[y-1][x] == 0 && masiv[y][x] == 0)||(oldY == 2 && masiv[y+1][x] == 0 && masiv[y][x] == 0)){
+				y += move % 2 == 1 ? -1 : +1 ;
+				drawMove2(y,x,oldY,oldX);
+				y += move % 2 == 1 ? +1 : -1 ;
+			}
+			if (insideBoard(y,x+1) && enemy(y,x+1)){
+				x++;
+				drawTake(y,x,oldY,oldX,take);
+				x--;
+			}
+			if (insideBoard(y,x-1) && enemy(y,x-1)){
+				x--;
+				drawTake(y,x,oldY,oldX,take);
+			}
+		}
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkRook(y,x){
+		var take = [];
+		drawBoard();
+		checkDir(y,x,-1,0,take);
+		checkDir(y,x,+1,0,take);
+		checkDir(y,x,0,-1,take);
+		checkDir(y,x,0,+1,take);
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkKnight(y,x){
+		var take = [];
+		drawBoard();
+		checkKnightDir(y,x,-2,+1,take);
+		checkKnightDir(y,x,-2,-1,take);
+		checkKnightDir(y,x,+2,+1,take);
+		checkKnightDir(y,x,+2,-1,take);
+		checkKnightDir(y,x,-1,-2,take);
+		checkKnightDir(y,x,+1,-2,take);
+		checkKnightDir(y,x,-1,+2,take);
+		checkKnightDir(y,x,+1,+2,take);
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkBishop(y,x){
+		var take = [];
+		drawBoard();
+		checkDir(y,x,-1,-1,take);
+		checkDir(y,x,+1,+1,take);
+		checkDir(y,x,+1,-1,take);
+		checkDir(y,x,-1,+1,take);
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkQueen(y,x){
+		var take = [];
+		drawBoard();
+		checkDir(y,x,-1,0,take);
+		checkDir(y,x,+1,0,take);
+		checkDir(y,x,0,-1,take);
+		checkDir(y,x,0,+1,take);
+		checkDir(y,x,-1,-1,take);
+		checkDir(y,x,+1,+1,take);
+		checkDir(y,x,+1,-1,take);
+		checkDir(y,x,-1,+1,take);
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkKing(y,x){
+		var take = [];
+		drawBoard();
+		castling();
+		checkDirKing(y,x,+1,0,take);
+		checkDirKing(y,x,-1,0,take);
+		checkDirKing(y,x,0,+1,take);
+		checkDirKing(y,x,0,-1,take);
+		checkDirKing(y,x,+1,+1,take);
+		checkDirKing(y,x,+1,-1,take);
+		checkDirKing(y,x,-1,+1,take);
+		checkDirKing(y,x,-1,-1,take);
+		drawFigures();
+		var i = 0;
+		while(i < take.length){
+			document.getElementById("board").innerHTML += take[i];
+			i++
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkDir(y,x,dirY,dirX,take){
+		var oldX = x;
+		var oldY = y;
+		while(insideBoard(y+dirY,x+dirX) && (masiv[y+dirY][x+dirX] == 0 || enemy(y+dirY,x+dirX))){
+			x += dirX;
+			y += dirY;
+			if(enemy(y,x)){
+				drawTake(y,x,oldY,oldX,take);
+				break;
+			}
+			drawMove(y,x,oldY,oldX);
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkDirKing(y,x,dirY,dirX,take){
+		var oldX = x;
+		var oldY = y;
+		if(insideBoard(y+dirY,x+dirX) && (masiv[y+dirY][x+dirX] == 0 || enemy(y+dirY,x+dirX))){
+			x += dirX;
+			y += dirY;
+			if(enemy(y,x)){
+				drawTake(y,x,oldY,oldX,take);
+				return;
+			}
+			drawMove(y,x,oldY,oldX);
+		}
+	}
+//------------------------------------------------------------------------------
+	function checkKnightDir(y,x,dirY,dirX,take){
+		var oldX = x;
+		var oldY = y;
+		if(insideBoard(y+dirY,x+dirX) && (masiv[y+dirY][x+dirX] == 0 || enemy(y+dirY,x+dirX))){
+			x += dirX;
+			y += dirY;
+			if(enemy(y,x)){
+				drawTake(y,x,oldY,oldX,take);
+				return;
+			}
+			drawMove(y,x,oldY,oldX);
+		}
+	}
+//------------------------------------------------------------------------------
+	function Move3(y,x,king,rook,side){
+		if(side == "right"){
+			masiv[y][x] = king;
+			masiv[y][6] = rook;
+			masiv[y][8] = 0;
+			masiv[y][5] = 0;
+		}
+		else if(side == "left"){
+			masiv[y][x] = king;
+			masiv[y][4] = rook;
+			masiv[y][1] = 0;
+			masiv[y][5] = 0;
+		}
+		if(king == whiteKing){
+			whiteKingMove++;
+			whereWhiteKing = {y:y,x:x};
+		}
+		if(king == blackKing){
+			blackKingMove++;
+			whereBlackKing = {y:y,x:x};
+		}
+		nextTurn();
+		board();
+	}
+//------------------------------------------------------------------------------
+	function Move2(y,x,oldY,oldX){
+		Move(y,x,oldY,oldX);
+		enPassant.y = y;
+		enPassant.x = x;
+	}
+//------------------------------------------------------------------------------
+	function Move(y,x,oldY,oldX){
+		var Rook = null;
+		var side = null;
+		if (masiv[oldY][oldX] == whiteRook)Rook = whiteRook;
+		if (masiv[oldY][oldX] == blackRook)Rook = blackRook;
+		if (oldX == 8)side = "right";
+		if (oldX == 1)side = "left";
+		if (Rook != null && side != null){
+			if(Rook == whiteRook && side == "right")whiteRookRight++;
+			else if(Rook == whiteRook && side == "left")whiteRookLeft++;
+			else if(Rook == blackRook && side == "right")blackRookRight++;
+			else if(Rook == blackRook && side == "left")blackRookLeft++;
+		}
+		if (masiv[oldY][oldX] == whiteKing){
+			whiteKingMove++;
+			whereWhiteKing = {y:y,x:x};
+		}
+		if (masiv[oldY][oldX] == blackKing){
+			blackKingMove++;
+			whereBlackKing = {y:y,x:x};
+		}
+		masiv[y][x] = masiv[oldY][oldX];
+		masiv[oldY][oldX] = 0;
+		board();
+		if(masiv[y][x] == whitePawn && y == 1){
+			promoteChoice(y,x);
+		}
+		else if(masiv[y][x] == blackPawn && y == 8){
+			promoteChoice(y,x);
+		}
+		else nextTurn();
+	}
+//------------------------------------------------------------------------------
+	function EnPassant(y,x,whereY,whereX){
+		masiv[enPassant.y][enPassant.x] = 0;
+		masiv[whereY][whereX] = masiv[y][x];
+		masiv[y][x] = 0;
+		board();
+		nextTurn();
+	}
+//------------------------------------------------------------------------------
+	function checkFight(newFightSquares){
+		if(checkCheck == true) return false;
+		fightSquares = newFightSquares;
+		move++;
+		checkCheck = true;
+		fight = false;
+		var yYy = 1;
+		var xXx = 1;
+		var offset = move % 2 == 1 ? 0 : blackPawn - whitePawn;
+		while(yYy < 9){
+			while(xXx < 9){
+				if (masiv[yYy][xXx] == whitePawn + offset){
+					checkPawn(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteRook + offset){
+					checkRook(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteKnight + offset){
+					checkKnight(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteBishop + offset){
+					checkBishop(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteQueen + offset){
+					checkQueen(yYy,xXx);
+				}
+				else if (masiv[yYy][xXx] == whiteKing + offset){
+					checkKing(yYy,xXx);
+				}
+				xXx++;
+			}
+			yYy++;
+			xXx = 1;
+		}
+		checkCheck = false;
+		move--;
+		return fight;
+	}
+//------------------------------------------------------------------------------
+	function castling(){
+		var y = move % 2 == 1 ? 8: 1;
+		var king = move % 2 == 1 ? whiteKing: blackKing;
+		var rook = move % 2 == 1 ? whiteRook: blackRook;
+		var kingCheck = king == whiteKing ? whiteKingMove: blackKingMove;
+		if (kingCheck == 0){
+			var side = "right";
+			var x = 7;
+			var rookCheck = rook == whiteRook ? whiteRookRight: blackRookRight;
+			if(rookCheck == 0){
+				if(masiv[y][6] == 0 && masiv[y][7] == 0 && !checkFight([{y:y,x:5},{y:y,x:6},{y:y,x:7}])){
+					drawMove3(y,x,king,rook,side);
+				}
+			}
+			side = "left";
+			x = 3;
+			var rookCheck = rook == whiteRook ? whiteRookLeft: blackRookLeft;
+			if(rookCheck == 0){
+				if(masiv[y][2] == 0 && masiv[y][3] == 0 && masiv[y][4] == 0 && !checkFight({y:y,x:5},{y:y,x:4},{y:y,x:3})){
+					drawMove3(y,x,king,rook,side);
+				}
+			}
+		}
+	}
+//------------------------------------------------------------------------------
+	function enemy(y,x){
+		if (insideBoard(y,x) && move % 2 == 1 && masiv[y][x] >= 7 && masiv[y][x] <= 12){
+			return true;
+		}
+		else if (insideBoard(y,x) && move % 2 == 0 && masiv[y][x] >= 1 && masiv[y][x] <= 6){
+			return true;
+		}else{return false;}
+	}
+//------------------------------------------------------------------------------
+	function drawEnPassant(y,x,whereY,whereX){
+		if(checkCheck == true) return;
+		var figure = masiv[enPassant.y][enPassant.x];
+		masiv[enPassant.y][enPassant.x] = 0;
+		masiv[whereY][whereX] = masiv[y][x];
+		masiv[y][x] = 0;
+		var whereKing = move % 2 == 1 ? whereWhiteKing : whereBlackKing ;
+		var bool = checkFight([whereKing]);
+		masiv[y][x] = masiv[whereY][whereX];
+		masiv[enPassant.y][enPassant.x] = figure;
+		masiv[whereY][whereX] = 0;
+		if (bool) return;
+		possibleMove++;
+		if(checkGameOver == false){
+			document.getElementById("board").innerHTML += '<img onclick="EnPassant('+y+','+x+','+whereY+','+whereX+')" class="kvadrat_red" style="grid-row:'+(whereY)+';grid-column:'+(whereX)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function drawMove(y,x,oldY,oldX){
+		var iterator = 0;
+		var moveKing = false;
+		if(whereWhiteKing.y == oldY && whereWhiteKing.x == oldX) moveKing = true;
+		if(whereBlackKing.y == oldY && whereBlackKing.x == oldX) moveKing = true;
+		while(fightSquares.length > iterator){
+			if (fightSquares[iterator].y == y && fightSquares[iterator].x == x) {
+				fight = true;
+			}
+			iterator++;
+		}
+		if(checkCheck == true) return;
+		masiv[y][x] = masiv[oldY][oldX];
+		masiv[oldY][oldX] = 0;
+		var whereKing = move % 2 == 1 ? whereWhiteKing : whereBlackKing ;
+		var checkWhere = moveKing ? [{y:y,x:x}] : [whereKing];
+		var bool = checkFight(checkWhere);
+		masiv[oldY][oldX] = masiv[y][x];
+		masiv[y][x] = 0;
+		if (bool) return;
+		possibleMove++;
+		if(checkGameOver == false){
+			document.getElementById("board").innerHTML += '<img onclick="Move('+y+','+x+','+oldY+','+oldX+')" class="kvadrat_choice" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function drawTake(y,x,oldY,oldX,take){
+		var iterator = 0;
+		var moveKing = false;
+		if(whereWhiteKing.y == oldY && whereWhiteKing.x == oldX) moveKing = true;
+		if(whereBlackKing.y == oldY && whereBlackKing.x == oldX) moveKing = true;
+		while(fightSquares.length > iterator){
+			if (fightSquares[iterator].y == y && fightSquares[iterator].x == x) {
+				fight = true;
+			}
+			iterator++;
+		}
+		if(checkCheck == true) return;
+		var figure = masiv[y][x];
+		masiv[y][x] = masiv[oldY][oldX];
+		masiv[oldY][oldX] = 0;
+		var whereKing = move % 2 == 1 ? whereWhiteKing : whereBlackKing ;
+		var checkWhere = moveKing ? [{y:y,x:x}] : [whereKing];
+		var bool = checkFight(checkWhere);
+		masiv[oldY][oldX] = masiv[y][x];
+		masiv[y][x] = figure;
+		if (bool) return;
+		possibleMove++;
+		if(checkGameOver == false){
+			document.getElementById("board").innerHTML += '<img  class="kvadrat_red" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+			take.push ('<img onclick="Move('+y+','+x+','+oldY+','+oldX+')" class="kvadrat_transparent" style="grid-row:'+(y)+';grid-column:'+(x)+';">');
+		}
+	}
+//------------------------------------------------------------------------------
+	function drawMove2(y,x,oldY,oldX){
+		var iterator = 0;
+		while(fightSquares.length > iterator){
+			if (fightSquares[iterator].y == y && fightSquares[iterator].x == x) {
+				fight = true;
+			}
+			iterator++;
+		}
+		if(checkCheck == true) return;
+		masiv[y][x] = masiv[oldY][oldX];
+		masiv[oldY][oldX] = 0;
+		var whereKing = move % 2 == 1 ? whereWhiteKing : whereBlackKing ;
+		var bool = checkFight([whereKing]);
+		masiv[oldY][oldX] = masiv[y][x];
+		masiv[y][x] = 0;
+		if (bool) return;
+		possibleMove++;
+		if(checkGameOver == false){
+			document.getElementById("board").innerHTML += '<img onclick="Move2('+y+','+x+','+oldY+','+oldX+')" class="kvadrat_choice" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function drawMove3(y,x,king,rook,side){
+		if(checkCheck == false && checkGameOver == false){
+			document.getElementById("board").innerHTML += '<img onclick="Move3('+y+','+x+','+king+','+rook+',\''+side+'\')" class="kvadrat_choice" style="grid-row:'+(y)+';grid-column:'+(x)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function promoteChoice(y,x){
+		promoteChoiceCheck = true;
+		board();
+		if(move % 2 == 1){
+			document.getElementById("board").innerHTML += '<img src="white_rook.svg" onclick="promote('+y+','+x+','+whiteRook+')" class="kvadrat_transparent" style="grid-row:'+(1)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="white_knight.svg" onclick="promote('+y+','+x+','+whiteKnight+')" class="kvadrat_transparent" style="grid-row:'+(2)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="white_bishop.svg" onclick="promote('+y+','+x+','+whiteBishop+')" class="kvadrat_transparent" style="grid-row:'+(3)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="white_queen.svg" onclick="promote('+y+','+x+','+whiteQueen+')" class="kvadrat_transparent" style="grid-row:'+(4)+';grid-column:'+(9)+';">';
+		}
+		else if(move % 2 == 0){
+			document.getElementById("board").innerHTML += '<img src="black_rook.svg" onclick="promote('+y+','+x+','+blackRook+')" class="kvadrat_transparent" style="grid-row:'+(5)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="black_knight.svg" onclick="promote('+y+','+x+','+blackKnight+')" class="kvadrat_transparent" style="grid-row:'+(6)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="black_bishop.svg" onclick="promote('+y+','+x+','+blackBishop+')" class="kvadrat_transparent" style="grid-row:'+(7)+';grid-column:'+(9)+';">';
+			document.getElementById("board").innerHTML += '<img src="black_queen.svg" onclick="promote('+y+','+x+','+blackQueen+')" class="kvadrat_transparent" style="grid-row:'+(8)+';grid-column:'+(9)+';">';
+		}
+	}
+//------------------------------------------------------------------------------
+	function promote(y,x,figure){
+		masiv[y][x] = figure;
+		promoteChoiceCheck = false;
+		nextTurn();
+	}
+//------------------------------------------------------------------------------
+	function nextTurn(){
+		enPassant.y = 0;
+		enPassant.x = 0;
+		move++;
+		attackWhiteKing = false;
+		attackBlackKing = false;
+		if(checkFight([whereWhiteKing])){
+			attackWhiteKing = true;
+		}
+		if(checkFight([whereBlackKing])){
+			attackBlackKing = true;
+		}
+		gameOver();
+		board();
+	}
+//------------------------------------------------------------------------------
+	</script>
+</body>
+</html>

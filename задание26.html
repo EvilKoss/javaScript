@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head>
+	<title>magazin</title>
+	<meta charset="utf-8"/ >
+</head>
+<body>
+	<p id="zamena"></p>
+	<br/><br/><br/><br/><br/>
+	<p id="cart">Cart:</p>
+	<p id="total">Total:</p>
+	<input id="123" type="button" value="Buy all" onclick="all123()" disabled=true>
+	<script type="text/javascript">
+		var tovari = [
+						{"name":"iphone","price":100},
+						{"name":"tv","price":200},
+						{"name":"stove","price":150},
+						{"name":"refrigerator","price":350},
+					];
+		var i = 0;
+		while (i < tovari.length){
+			document.getElementById("zamena").innerHTML += "<br/>"+tovari[i].name+" "+tovari[i].price+"<input type='button' onclick='buy(\""+tovari[i].name+"\","+tovari[i].price+")' value='buy'>"
+			i += 1;
+		}
+		var total = 0;
+		var dict = {};
+		function buy(id,price){
+			total += price;
+			if(id in dict){
+				dict[id].count++;
+			}
+			else{
+				dict[id] = {"price":price,"count":1};
+			}
+			obnovit();
+		}
+		function all123(){
+			alert("spasibo za pokypky")
+		}
+		function dobavit(key){
+			dict[key].count++
+			total += dict[key]["price"];
+			obnovit();
+		}
+		function otnyat(key){
+			if (dict[key].count >= 2){
+				total -= dict[key]["price"];
+				dict[key].count--
+				}
+			else {
+				total -= dict[key]["price"];
+				delete dict[key]
+			}
+			obnovit();
+		}
+		function obnovit(){
+			document.getElementById("cart").innerHTML = "Cart: ";
+			for (var key in dict){
+				document.getElementById("cart").innerHTML += '<br/>' + key + " " + dict[key]["price"] + " " + dict[key].count;
+				document.getElementById("cart").innerHTML += "<input type='button' value='+' onclick='dobavit(\""+key+"\")'>"+"  "+"<input type='button' onclick='otnyat(\""+key+"\")' value='-'>"
+			}
+			document.getElementById("total").innerHTML = "Total: " + total
+			document.getElementById("123").disabled = total > 0 ? false: true;
+		}
+	</script>
+</body>

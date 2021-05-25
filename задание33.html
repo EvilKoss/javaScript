@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>snake</title>
+	<style type="text/css">
+		.pole {
+			left:10%;
+			top:10%;
+			width:200px;
+			height:200px;
+			background-color:red;
+			position:absolute;
+			display:inline-block;
+		}
+		.kvadrat {
+			width:20px;
+			height:20px;
+			background-color:blue;
+			position:absolute;
+			left: 00px;
+			top: 00px;
+		}
+		.kvadratgreen {
+			width:20px;
+			height:20px;
+			background-color:green;
+			position:absolute;
+			left: 00px;
+			top: 00px;
+		}
+		.kvadratyellow {
+			width:20px;
+			height:20px;
+			background-color:yellow;
+			position:absolute;
+			left: 00px;
+			top: 00px;
+		}
+	</style>
+</head>
+<body>
+	<p id = "tyt">Score:</p>
+	<p id = "lvl">Level:</p>
+	<p id = "game_over"></p>
+	<p id = "but"></p>
+	<div id="hyi" class = "pole">
+		<!--<div id="pos0" class = "kvadrat"></div>-->
+	</div>
+	<script type="text/javascript">
+		//document.getElementById("hyi").innerHTML += '<div id="pos1" class = "kvadrat"></div>'
+		var posx = 40;
+		var posy = 20;
+		var xvosty = 4;
+		var xvostx = 3;
+		var golovay = 4;
+		var golovax = 5;
+		var speed = 200;
+		var lvl = 1;
+		var timervar = setInterval(timer,speed);
+		var pologenie = [{"y":4,"x":3},{"y":4,"x":4},{"y":4,"x":5}];
+		window.onkeydown = press;
+		var key = "";
+		var i = 0;
+		var s = 0;
+		var mas = [];
+		while(i<10){
+			mas.push([0,0,0,0,0,0,0,0,0,0]);
+			i++;
+		}
+		mas[4][5] = 1;
+		mas[4][4] = 1;
+		mas[4][3] = 1;
+		mas[8][8] = 3;
+		function restart(){
+			mas = [];
+			var ram = 0;
+			while(ram<10){
+				mas.push([0,0,0,0,0,0,0,0,0,0]);
+				ram++;
+			}
+			pologenie = [{"y":4,"x":3},{"y":4,"x":4},{"y":4,"x":5}];
+			mas[4][5] = 1;
+			mas[4][4] = 1;
+			mas[4][3] = 1;
+			t = 1;
+			key = ""
+			zamenax = 0;
+			zamenay = 0;
+			xvosty = 4;
+			xvostx = 3;
+			golovay = 4;
+			golovax = 5;
+			speed = 200;
+			lvl = 1;
+			s = 0;
+			while(t>0){
+				var xx = Math.floor(Math.random() * 10);
+				var yy = Math.floor(Math.random() * 10);
+				if(mas[yy][xx]==0){
+					mas[yy][xx] = 3;
+					t--
+				}
+			}
+			document.getElementById("game_over").innerHTML = "";
+			document.getElementById("but").innerHTML = "";
+			document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+			document.getElementById("tyt").innerHTML = "Score:"+s+"";
+			timervar = setInterval(timer,speed);
+			narisovat();
+		}
+		function narisovat(){
+			document.getElementById("hyi").innerHTML = ""
+			var x = 0;
+			var y = 0;
+			while(y<10){
+				if (mas[y][x]==1){
+					document.getElementById("hyi").innerHTML += '<div id="pos'+y+x+'" class = "kvadrat"></div>'
+					document.getElementById("pos"+y+x).style.left = ""+x*20+"px"
+					document.getElementById("pos"+y+x).style.top = ""+y*20+"px"
+				}
+				else if (mas[y][x]==3){
+					document.getElementById("hyi").innerHTML += '<div id="pos'+y+x+'" class = "kvadratgreen"></div>'
+					document.getElementById("pos"+y+x).style.left = ""+x*20+"px"
+					document.getElementById("pos"+y+x).style.top = ""+y*20+"px"
+				}
+				else if (mas[y][x]==2){
+					document.getElementById("hyi").innerHTML += '<div id="pos'+y+x+'" class = "kvadratyellow"></div>'
+					document.getElementById("pos"+y+x).style.left = ""+x*20+"px"
+					document.getElementById("pos"+y+x).style.top = ""+y*20+"px"
+				}
+				x++;
+				if (x==10){
+					x = 0;
+					y++;
+				}
+			}
+		}
+
+		var zamenax = 0;
+		var zamenay = 0;
+		function timer(){
+			//document.getElementById("tyt").innerHTML = ""+zamenax+"";
+			if(key=="ArrowUp"){
+				if (zamenay != +1){
+				zamenay = -1;zamenax = 0;
+				}
+			}
+			else if(key=="ArrowDown"){
+				if (zamenay != -1){
+				zamenay = +1;zamenax = 0;
+				}
+			}
+			else if(key=="ArrowLeft"){
+				if (zamenax != +1){
+				zamenax = -1;zamenay = 0;
+				}
+			}
+			else if(key=="ArrowRight"){
+				if (zamenax != -1){
+				zamenax = +1;zamenay = 0;
+				}
+			}
+			if(golovay+zamenay<0){
+				golovay = 10
+			}
+			else if(golovax+zamenax>9){
+				golovax = -1
+			}
+			else if(golovax+zamenax<0){
+				golovax = 10
+			}
+			else if(golovay+zamenay>9){
+				golovay = -1
+			}
+			if(pologenie.length >= 4){
+				if(mas[golovay+zamenay][golovax+zamenax] == 1){
+					document.getElementById("game_over").innerHTML = "GAME OVER";
+					document.getElementById("but").innerHTML = '<input type="button" onclick="restart()" value="Restart"/>';
+					clearInterval(timervar);
+				}
+			}
+			if(mas[golovay+zamenay][golovax+zamenax] == 0){
+				mas[xvosty][xvostx] = 0;
+				mas[golovay+zamenay][golovax+zamenax] = 1;
+				golovay += zamenay;
+				golovax += zamenax;
+				xvosty = pologenie[1].y
+				xvostx = pologenie[1].x
+				pologenie.shift()
+				pologenie.push({"y":golovay,"x":golovax})
+			}
+			else if(mas[golovay+zamenay][golovax+zamenax] == 2){
+				document.getElementById("game_over").innerHTML = "GAME OVER";
+				document.getElementById("but").innerHTML = '<input type="button" onclick="restart()" value="Restart"/>';
+				clearInterval(timervar);
+			}
+			else if(mas[golovay+zamenay][golovax+zamenax] == 3){
+				s += 10;
+				mas[golovay+zamenay][golovax+zamenax] = 1;
+				golovay += zamenay;
+				golovax += zamenax;
+				pologenie.push({"y":golovay,"x":golovax})
+				document.getElementById("tyt").innerHTML = "Score:"+s+"";
+				document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+				var t = 1;
+				while(t>0){
+					var xx = Math.floor(Math.random() * 10);
+					var yy = Math.floor(Math.random() * 10);
+					if(mas[yy][xx]==0){
+						mas[yy][xx] = 3;
+						t--
+						if(pologenie.length % 5 == 0){
+							clearInterval(timervar);
+							speed -= 10;
+							timervar = setInterval(timer,speed);
+						}
+						if(pologenie.length >= 20){
+							mas = [];
+							var ham = 0;
+							while(ham<10){
+								mas.push([0,0,0,0,0,0,0,0,0,0]);
+								ham++;
+							}
+							pologenie = [{"y":4,"x":3},{"y":4,"x":4},{"y":4,"x":5}];
+							mas[4][5] = 1;
+							mas[4][4] = 1;
+							mas[4][3] = 1;
+							lvl ++;
+							document.getElementById("lvl").innerHTML = "Level:"+lvl+"";
+							document.getElementById("tyt").innerHTML = "Score:"+s+"";
+							t = 1;
+							key = ""
+							zamenax = 0;
+							zamenay = 0;
+							xvosty = 4;
+							xvostx = 3;
+							golovay = 4;
+							golovax = 5;
+							while(t>0){
+								var xx = Math.floor(Math.random() * 10);
+								var yy = Math.floor(Math.random() * 10);
+								if(mas[yy][xx]==0){
+									mas[yy][xx] = 3;
+									t--
+								}
+							}
+							speed = 200
+							var jay = 1;
+							while(jay<lvl){
+								var xx = Math.floor(Math.random() * 10);
+								var yy = Math.floor(Math.random() * 10);
+								if(mas[yy][xx]==0){
+									mas[yy][xx] = 2;
+									jay++
+								}
+							}
+						}
+					}
+				}
+			}
+			narisovat();
+		}
+		function press(event) {
+			key = event.code;
+			//document.getElementById("tyt").innerHTML += event.code;
+		}
+		//alert(mas.length);
+	</script>
+</body>
+</html>

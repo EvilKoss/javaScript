@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+    // Following this idea: https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+    var chartSize = 1000;
+    var dataSize = 1000;
+    var canvas = d3.select('body')
+        .append('canvas')
+        .style({position: 'absolute', width: chartSize + 'px', height: chartSize + 'px'})
+        .attr({width: dataSize, height: dataSize})
+        .node();
+    var canvasWidth  = canvas.width;
+    var canvasHeight = canvas.height;
+    var ctx = canvas.getContext('2d');
+    var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    var buf = new ArrayBuffer(imageData.data.length);
+    var buf8 = new Uint8ClampedArray(buf);
+    var data = new Uint32Array(buf);
+
+	function drawPixel(x,y,r,g,b,a){
+		data[y * canvasWidth + x] =
+			(a << 24) |    // alpha
+			(b << 16) |    // blue
+			(g <<  8) |    // green
+			r;             // red
+	}
+	function drawScreen(){
+		imageData.data.set(buf8);
+	    ctx.putImageData(imageData, 0, 0);
+	}
+	for (var y = 0; y < canvasHeight; ++y) {
+        for (var x = 0; x < canvasWidth; ++x) {
+			drawPixel(x,y,255,255,0,255);
+        }
+    }
+	drawPixel(499,10,0,0,0,255);
+	drawPixel(500,10,0,0,0,255);
+	drawPixel(499,9,0,0,0,255);
+	drawPixel(500,9,0,0,0,255);
+
+	drawPixel(10,989,0,0,0,255);
+	drawPixel(10,990,0,0,0,255);
+	drawPixel(9,989,0,0,0,255);
+	drawPixel(9,990,0,0,0,255);
+
+	drawPixel(989,990,0,0,0,255);
+	drawPixel(989,989,0,0,0,255);
+	drawPixel(990,989,0,0,0,255);
+	drawPixel(990,990,0,0,0,255);
+
+
+	let pointx = Math.floor(Math.random() * 1000);
+	let pointy = Math.floor(Math.random() * 1000);
+	drawPixel(pointx,pointy,255,0,0,255)
+
+	function daVinci() {
+		let dice = Math.floor(Math.random() * 6+1);
+		if (dice == 1 || dice == 2){
+			pointx = Math.floor((pointx + 500) / 2);
+			pointy = Math.floor((pointy + 10) / 2);
+		}
+
+		else if (dice == 3 || dice == 4){
+			pointx = Math.floor((pointx + 10) / 2);
+			pointy = Math.floor((pointy + 990) / 2);
+		}
+
+		else if (dice == 5 || dice == 6){
+			pointx = Math.floor((pointx + 990) / 2);
+			pointy = Math.floor((pointy + 990) / 2);
+		}
+		drawPixel(pointx,pointy,255,0,0,255)
+	}
+	function onUse(){
+		var i = 0;
+		while(i<1000){
+			daVinci();
+			i++;
+		}
+	}
+	var timer = setInterval(onUse,1);
+	var timervar = setInterval(drawScreen,500);
+	drawScreen();
+
+	setTimeout(() => {clearTimeout(timer);clearTimeout(timervar)},5000);
+
+
+</script>
+</body>
+</html>

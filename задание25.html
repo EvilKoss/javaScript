@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+	<title>magazin</title>
+	<meta charset="utf-8"/ >
+</head>
+<body>
+	<p>tv 200r  <input type="button" onclick="buy('tv',200)" value="buy"></p>
+	<p>refrigerator 300r  <input type="button" onclick="buy('refrigerator',300)" value="buy"></p>
+	<p>iphone 100r  <input type="button" onclick="buy('iphone',100)" value="buy"></p>
+	<p>stove 150r  <input type="button" onclick="buy('stove',150)" value="buy"></p>
+	<p>washing machine 250r  <input type="button" onclick="buy('washing machine',250)" value="buy"></p>
+	<br/><br/><br/><br/><br/>
+	<p id="cart">Cart:</p>
+	<p id="total">Total:</p>
+	<input id="123" type="button" value="Buy all" onclick="all123()" disabled=true>
+	<script type="text/javascript">
+		var total = 0;
+		var dict = {};
+		function buy(id,price){
+			total += price;
+			if(id in dict){
+				dict[id].count++;
+			}
+			else{
+				dict[id] = {"price":price,"count":1};
+			}
+			obnovit();
+		}
+		function all123(){
+			alert("spasibo za pokypky")
+		}
+		function dobavit(key){
+			dict[key].count++
+			total += dict[key]["price"];
+			obnovit();
+		}
+		function otnyat(key){
+			if (dict[key].count >= 2){
+				total -= dict[key]["price"];
+				dict[key].count--
+				}
+			else {
+				delete dict[key]
+			}
+			obnovit();
+		}
+		function obnovit(){
+			document.getElementById("cart").innerHTML = "Cart: ";
+			for (var key in dict){
+				document.getElementById("cart").innerHTML += '<br/>' + key + " " + dict[key]["price"] + " " + dict[key].count;
+				document.getElementById("cart").innerHTML += "<input type='button' value='+' onclick='dobavit(\""+key+"\")'>"+"  "+"<input type='button' onclick='otnyat(\""+key+"\")' value='-'>"
+			}
+			document.getElementById("total").innerHTML = "Total: " + total
+			document.getElementById("123").disabled = total > 0 ? false: true;
+		}
+	</script>
+</body>

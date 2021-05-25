@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+	<title>zadanie</title>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<input type="text" id="name">
+	<input type="button" id="butt" value="dobavit" onclick="dobavit()"><br/><br/>
+	<input type="text" id="lastname"><br/><br/>
+	<input type="number" id="age"><br/><br/>
+	<p id="suda"></p>
+	<script type="text/javascript">
+		var i = 0
+		function dobavit() {
+			str = "";
+			str += "<p id='"+i+"'>";
+			str += document.getElementById('name').value;
+			str += " ";
+			str += document.getElementById('lastname').value;
+			str += " ";
+			str += document.getElementById('age').value;
+			str += "<input type='button' value='del' onclick='del("+i+")' id='"+i+"'>"
+			str += "</p>";
+			i ++
+			document.getElementById("suda").innerHTML += str;
+		}
+		function del(i){
+			document.getElementById(i).outerHTML = ""
+		}
+	</script>
+</body>
